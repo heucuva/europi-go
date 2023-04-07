@@ -29,6 +29,9 @@ const (
 	limitedSpectrum = time.Second * 15 / 22050
 )
 
+func noop(_ units.CV) {
+}
+
 func (m *Module) Init(config Config) error {
 	var err error
 	m.clock, err = getClock(config.ClockRange)
@@ -38,12 +41,12 @@ func (m *Module) Init(config Config) error {
 
 	m.outA = config.SampleOutA
 	if m.outA == nil {
-		m.outA = func(cv units.CV) {}
+		m.outA = noop
 	}
 
 	m.outB = config.SampleOutB
 	if m.outB == nil {
-		m.outB = func(cv units.CV) {}
+		m.outB = noop
 	}
 
 	m.attenA = config.SampleAttenuatorA

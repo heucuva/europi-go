@@ -15,17 +15,19 @@ const (
 	FunctionModeQuartic
 )
 
-type functionModeCalc func(t, dur time.Duration) units.CV
+type functionMode interface {
+	Calc(t, dur time.Duration) units.CV
+}
 
-func (e envelope) getFunctionModeCalc(mode FunctionMode) (functionModeCalc, error) {
+func (e envelope) getFunctionMode(mode FunctionMode) (functionMode, error) {
 	switch mode {
 	case FunctionModeLinear:
-		return modeFuncLinear, nil
+		return &functionModeLinear{}, nil
 	case FunctionModeExponential:
-		return modeFuncExponential, nil
+		return &functionModeExponential{}, nil
 	case FunctionModeQuartic:
-		return modeFuncQuartic, nil
+		return &functionModeQuartic{}, nil
 	default:
-		return nil, fmt.Errorf("unhandled attack mode: %q", mode)
+		return nil, fmt.Errorf("unhandled function mode: %q", mode)
 	}
 }

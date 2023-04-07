@@ -7,7 +7,9 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-func modeFuncExponential(t, dur time.Duration) units.CV {
+type functionModeExponential struct{}
+
+func (functionModeExponential) Calc(t, dur time.Duration) units.CV {
 	maxT := float32(dur.Seconds())
 	if maxT == 0 {
 		return 0.0

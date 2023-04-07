@@ -12,6 +12,9 @@ type Module struct {
 	t        time.Duration
 }
 
+func noop() {
+}
+
 func (m *Module) Init(config Config) error {
 	if config.BPM <= 0 {
 		return fmt.Errorf("invalid bpm setting: %v", config.BPM)
@@ -21,7 +24,7 @@ func (m *Module) Init(config Config) error {
 	m.enabled = config.Enabled
 	m.out = config.ClockOut
 	if m.out == nil {
-		m.out = func() {}
+		m.out = noop
 	}
 	return nil
 }

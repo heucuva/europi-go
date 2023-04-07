@@ -9,9 +9,9 @@ import (
 
 type modelAD struct {
 	out       func(cv units.CV)
-	attack    functionModeCalc
+	attack    functionMode
 	attackDur time.Duration
-	decay     functionModeCalc
+	decay     functionMode
 	decayDur  time.Duration
 	atten     units.CV
 	state     state
@@ -32,7 +32,7 @@ func (m *modelAD) Tick(deltaTime time.Duration) {
 	case stateAttack:
 		t := m.stateTime + deltaTime
 		maxTime := time.Duration(float32(m.attackDur) * float32(m.atten))
-		cv := europim.Clamp(m.attack(t, maxTime), 0.0, 1.0)
+		cv := europim.Clamp(m.attack.Calc(t, maxTime), 0.0, 1.0)
 		if t >= maxTime {
 			m.state = stateDecay
 			t = 0
@@ -48,7 +48,7 @@ func (m *modelAD) Tick(deltaTime time.Duration) {
 			m.out(0)
 			return
 		}
-		cv := europim.Clamp(m.decay(t, m.decayDur), 0.0, 1.0)
+		cv := europim.Clamp(m.decay.Calc(t, m.decayDur), 0.0, 1.0)
 		m.stateTime = t
 		m.out(cv)
 

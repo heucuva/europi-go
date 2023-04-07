@@ -14,6 +14,9 @@ type Module struct {
 	rateAV units.CV
 }
 
+func noop(_ units.CV) {
+}
+
 func (m *Module) Init(config Config) error {
 	m.rate = config.Rate
 	m.rateAV = config.RateAttenuverter
@@ -21,7 +24,7 @@ func (m *Module) Init(config Config) error {
 		o := &m.lfo[i]
 		f := config.LFO[i]
 		if f == nil {
-			f = func(cv units.CV) {}
+			f = noop
 		}
 		o.out = f
 	}

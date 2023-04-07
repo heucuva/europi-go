@@ -11,23 +11,26 @@ type envelope struct {
 	model model
 }
 
+func noop(_ units.CV) {
+}
+
 func (e *envelope) Init(config EnvelopeConfig) error {
 	out := config.Out
 	if out == nil {
-		out = func(cv units.CV) {}
+		out = noop
 	}
 
 	switch config.Mode {
 	case EnvelopeModeAD:
 		attackDur := time.Duration(float32(time.Second) * config.Attack.ToFloat32())
 		decayDur := time.Duration(float32(time.Second) * config.Decay.ToFloat32())
-		amode, err := e.getFunctionModeCalc(config.AttackMode)
+		amode, err := e.getFunctionMode(config.AttackMode)
 		if err != nil {
-			return err
+			return fmt.Errorf("attack: %w", err)
 		}
-		dmode, err := e.getFunctionModeCalc(config.ReleaseMode)
+		dmode, err := e.getFunctionMode(config.ReleaseMode)
 		if err != nil {
-			return err
+			return fmt.Errorf("decay: %w", err)
 		}
 		e.model = &modelAD{
 			out:       out,

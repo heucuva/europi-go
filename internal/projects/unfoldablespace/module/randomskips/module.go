@@ -12,12 +12,15 @@ type Module struct {
 	chance float32
 }
 
+func noop(_ bool) {
+}
+
 func (m *Module) Init(config Config) error {
 	m.chance = config.Chance
 	for i := range m.gate {
 		f := config.Gate[i]
 		if f == nil {
-			f = func(high bool) {}
+			f = noop
 		}
 		m.gate[i].out = f
 		m.SetCV(i, 1)

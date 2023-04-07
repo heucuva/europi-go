@@ -11,11 +11,14 @@ type Module struct {
 	dur  time.Duration
 }
 
+func noop(_ bool) {
+}
+
 func (m *Module) Init(config Config) error {
 	for i := range m.gate {
 		f := config.Gate[i]
 		if f == nil {
-			f = func(high bool) {}
+			f = noop
 		}
 		m.gate[i] = f
 	}
