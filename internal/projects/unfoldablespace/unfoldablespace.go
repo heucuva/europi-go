@@ -84,8 +84,11 @@ func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 }
 
 func main() {
+	// some options shown below are being explicitly set to their defaults
+	// only to showcase their existence.
 	europi.Bootstrap(
 		europi.EnableDisplayLogger(false),
+		europi.InitRandom(true),
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),

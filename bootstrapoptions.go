@@ -11,6 +11,7 @@ type bootstrapConfig struct {
 	mainLoopInterval    time.Duration
 	panicHandler        func(e *EuroPi, err any)
 	enableDisplayLogger bool
+	initRandom          bool
 
 	// lifecycle callbacks
 	onPostBootstrapConstructionFn PostBootstrapConstructionFunc

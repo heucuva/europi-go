@@ -4,7 +4,6 @@ import (
 	"math"
 	"math/rand"
 
-	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
 
@@ -34,12 +33,27 @@ func (p *patternBrownian) Init(config Config) error {
 
 	p.deltaKey = units.VOct(1) / units.VOct(len(p.scale))
 
+	// generate a random 'key' in range.
+	// really just garbage that will get cleaned up by the
+	// quantizer phase within the `next` function
+	randKey := p.patPitch + p.patRange*units.VOct(rand.Float32()-0.5)
+	p.prevKey = p.next(randKey)
+
 	return nil
 }
 
 func (p *patternBrownian) Next() units.VOct {
-	nextKey := p.prevKey
-	for nextKey == p.prevKey {
+	nextKey := p.next(p.prevKey)
+	p.prevKey = nextKey
+	return nextKey
+}
+
+func (p *patternBrownian) next(prevKey units.VOct) units.VOct {
+	nextKey := prevKey
+	halfRange := p.patRange / 2.0
+	minPitch := p.patPitch - halfRange
+	maxPitch := p.patPitch + halfRange
+	for nextKey == prevKey {
 		curNoise := p.noise.Get()
 		up := curNoise >= p.prevNoise
 		p.prevNoise = curNoise
@@ -50,13 +64,17 @@ func (p *patternBrownian) Next() units.VOct {
 			nextKey -= p.deltaKey
 		}
 
-		halfRange := p.patRange / 2.0
-		nextKey = europim.Clamp(nextKey, -halfRange, halfRange)
+		voct := nextKey
+		// loop the pitch around a ring of the scale
+		if voct >= maxPitch {
+			voct = minPitch
+		} else if voct <= minPitch {
+			voct = maxPitch
+		}
+
+		oct, v := math.Modf(float64(voct.ToFloat32()))
+		nextKey = p.quantizer.QuantizeToValue(float32(v), p.scale) + units.VOct(oct)
 	}
-	p.prevKey = nextKey
 
-	voct := nextKey + p.patPitch
-	oct, v := math.Modf(float64(voct.ToFloat32()))
-
-	return p.quantizer.QuantizeToValue(float32(v), p.scale) + units.VOct(oct)
+	return nextKey
 }

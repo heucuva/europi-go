@@ -16,8 +16,10 @@ var (
 // Bootstrap will set up a global runtime environment (see europi.Pi)
 func Bootstrap(options ...BootstrapOption) error {
 	config := bootstrapConfig{
-		mainLoopInterval: DefaultMainLoopInterval,
-		panicHandler:     DefaultPanicHandler,
+		mainLoopInterval:    DefaultMainLoopInterval,
+		panicHandler:        DefaultPanicHandler,
+		enableDisplayLogger: DefaultEnableDisplayLogger,
+		initRandom:          DefaultInitRandom,
 
 		onPostBootstrapConstructionFn: DefaultPostBootstrapInitialization,
 		onPreInitializeComponentsFn:   nil,
@@ -89,6 +91,10 @@ func bootstrapInitializeComponents(config *bootstrapConfig, e *EuroPi) {
 		enableDisplayLogger(e)
 	}
 
+	if config.initRandom {
+		initRandom(e)
+	}
+
 	if config.onPostInitializeComponentsFn != nil {
 		config.onPostInitializeComponentsFn(e)
 	}
@@ -150,6 +156,8 @@ func bootstrapDestroy(config *bootstrapConfig, e *EuroPi) {
 	}
 
 	disableDisplayLogger(e)
+
+	uninitRandom(e)
 
 	close(piWantDestroyChan)
 	Pi = nil
