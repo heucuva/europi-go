@@ -1,10 +1,8 @@
 package complexrandom
 
 import (
-	"fmt"
 	"math"
 	"math/rand"
-	"strings"
 	"time"
 
 	europim "github.com/heucuva/europi/math"
@@ -12,19 +10,18 @@ import (
 )
 
 type Module struct {
-	attenA        units.CV
-	outA          func(cv units.CV)
-	attenB        units.CV
-	outB          func(cv units.CV)
-	holdDuration  time.Duration
-	clockInterval time.Duration
-	slewLength    time.Duration
-	slewT         time.Duration
-	slewStart     units.CV
-	slewEnd       units.CV
-	gd            units.CV
-	pd            float32
-	pc            float32
+	attenA     units.CV
+	outA       func(cv units.CV)
+	attenB     units.CV
+	outB       func(cv units.CV)
+	clock      clock
+	slewLength time.Duration
+	slewT      time.Duration
+	slewStart  units.CV
+	slewEnd    units.CV
+	gd         units.CV
+	pd         float32
+	pc         float32
 }
 
 const (
@@ -33,13 +30,10 @@ const (
 )
 
 func (m *Module) Init(config Config) error {
-	switch strings.ToLower(config.ClockRange) {
-	case "full":
-		m.clockInterval = fullSpectrum
-	case "limited":
-		m.clockInterval = limitedSpectrum
-	default:
-		return fmt.Errorf("unsupported clock range: %q", config.ClockRange)
+	var err error
+	m.clock, err = getClock(config.ClockRange)
+	if err != nil {
+		return err
 	}
 
 	m.outA = config.SampleOutA
@@ -65,9 +59,7 @@ func (m *Module) Init(config Config) error {
 }
 
 func (m *Module) Tick(deltaTime time.Duration) {
-	t := m.holdDuration + deltaTime
-	triggered := t > m.clockInterval
-	m.holdDuration = t % m.clockInterval
+	triggered := m.clock.Tick(deltaTime)
 
 	if triggered {
 		m.processTrigger()

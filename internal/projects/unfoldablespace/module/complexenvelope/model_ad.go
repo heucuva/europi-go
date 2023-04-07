@@ -9,9 +9,9 @@ import (
 
 type modelAD struct {
 	out       func(cv units.CV)
-	attack    modeFunc
+	attack    functionModeCalc
 	attackDur time.Duration
-	decay     modeFunc
+	decay     functionModeCalc
 	decayDur  time.Duration
 	atten     units.CV
 	state     state

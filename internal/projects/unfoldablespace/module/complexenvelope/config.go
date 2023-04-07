@@ -8,9 +8,9 @@ type Config struct {
 
 type EnvelopeConfig struct {
 	Out         func(cv units.CV)
-	Mode        string
-	AttackMode  string
-	ReleaseMode string
+	Mode        EnvelopeMode
+	AttackMode  FunctionMode
+	ReleaseMode FunctionMode
 	Attack      units.CV
 	Decay       units.CV
 }

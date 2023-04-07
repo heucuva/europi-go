@@ -12,7 +12,7 @@ type patternBrownian struct {
 	patRange units.VOct
 	patPitch units.VOct
 
-	keyboard *keyboard
+	scale    scale
 	prevKey  units.VOct
 	deltaKey units.VOct
 
@@ -32,7 +32,7 @@ func (p *patternBrownian) Init(config Config) error {
 	// impossible value, so can't throw out any item
 	p.prevNoise = -1.5
 
-	p.deltaKey = units.VOct(1) / units.VOct(len(p.keyboard.keys))
+	p.deltaKey = units.VOct(1) / units.VOct(len(p.scale))
 
 	return nil
 }
@@ -58,5 +58,5 @@ func (p *patternBrownian) Next() units.VOct {
 	voct := nextKey + p.patPitch
 	oct, v := math.Modf(float64(voct.ToFloat32()))
 
-	return p.quantizer.QuantizeToValue(float32(v), p.keyboard.keys) + units.VOct(oct)
+	return p.quantizer.QuantizeToValue(float32(v), p.scale) + units.VOct(oct)
 }

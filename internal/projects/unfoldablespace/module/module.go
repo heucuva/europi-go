@@ -56,7 +56,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	}
 
 	if err := m.mod.Init(threephaselfo.Config{
-		WaveMode:  "sine",
+		WaveMode:  threephaselfo.WaveModeSine,
 		Phi3Rate:  0.2,
 		SkewRate:  0.0,
 		SkewShape: 0.05,
@@ -75,12 +75,12 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	}
 
 	if err := m.harm.Init(complexarp.Config{
-		ArpOut:        config.SetVOct,
-		ArpPattern:    "Brownian",
-		ChordMode:     "C_maj",
-		QuantizerMode: "round",
-		ArpRange:      1.0,
-		ArpPitch:      4.0,
+		ArpOut:     config.SetVOct,
+		ArpPattern: complexarp.PatternBrownian,
+		Scale:      complexarp.ScaleC_Major,
+		Quantizer:  complexarp.QuantizerRound,
+		ArpRange:   1.0,
+		ArpPitch:   4.0,
 	}); err != nil {
 		return err
 	}
@@ -106,9 +106,9 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		Env: [2]complexenvelope.EnvelopeConfig{
 			{ // 1
 				Out:         config.SetLevel,
-				Mode:        "AD",
-				AttackMode:  "Linear",
-				ReleaseMode: "Exponential",
+				Mode:        complexenvelope.EnvelopeModeAD,
+				AttackMode:  complexenvelope.FunctionModeLinear,
+				ReleaseMode: complexenvelope.FunctionModeExponential,
 				Attack:      0.6666666666666667,
 				Decay:       0.6666666666666667,
 			},
@@ -117,9 +117,9 @@ func (m *UnfoldableSpace) Init(config Config) error {
 					config.SetLFOCV(cv)
 					m.lfo.SetCV(cv)
 				},
-				Mode:        "AD",
-				AttackMode:  "Linear",
-				ReleaseMode: "Exponential",
+				Mode:        complexenvelope.EnvelopeModeAD,
+				AttackMode:  complexenvelope.FunctionModeLinear,
+				ReleaseMode: complexenvelope.FunctionModeExponential,
 				Attack:      0.5,
 				Decay:       0.5,
 			},
@@ -138,7 +138,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		SampleAttenuatorB: 0.2,
 		SampleSlewB:       0.3,
 		ClockSpeed:        0.4,
-		ClockRange:        "Full",
+		ClockRange:        complexrandom.ClockFull,
 	}); err != nil {
 		return err
 	}

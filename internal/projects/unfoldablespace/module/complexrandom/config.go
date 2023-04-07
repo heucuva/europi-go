@@ -12,5 +12,5 @@ type Config struct {
 	SampleAttenuatorB units.CV
 	SampleSlewB       units.CV
 	ClockSpeed        units.CV
-	ClockRange        string
+	ClockRange        Clock
 }

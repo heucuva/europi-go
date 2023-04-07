@@ -2,9 +2,15 @@ package complexarp
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/heucuva/europi/units"
+)
+
+type Quantizer int
+
+const (
+	QuantizerRound = Quantizer(iota)
+	QuantizerTrunc
 )
 
 type quantizer[T any] interface {
@@ -12,13 +18,13 @@ type quantizer[T any] interface {
 	QuantizeToValue(in float32, list []T) T
 }
 
-func getArpQuantizer(config Config) (quantizer[units.VOct], error) {
-	switch strings.ToLower(config.QuantizerMode) {
-	case "round":
+func getArpQuantizer(mode Quantizer) (quantizer[units.VOct], error) {
+	switch mode {
+	case QuantizerRound:
 		return &quantizerRound[units.VOct]{}, nil
-	case "trunc":
+	case QuantizerTrunc:
 		return &quantizerTrunc[units.VOct]{}, nil
 	default:
-		return nil, fmt.Errorf("unsupported quantizer mode: %q", config.QuantizerMode)
+		return nil, fmt.Errorf("unsupported quantizer mode: %d", mode)
 	}
 }

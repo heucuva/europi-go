@@ -1,7 +1,6 @@
 package threephaselfo
 
 import (
-	"math"
 	"time"
 
 	europim "github.com/heucuva/europi/math"
@@ -11,6 +10,7 @@ import (
 type Module struct {
 	t        time.Duration
 	interval time.Duration
+	wave     wave
 	degree0  func(cv units.CV)
 }
 
@@ -21,15 +21,15 @@ func (m *Module) Init(config Config) error {
 	}
 
 	m.interval = europim.Lerp(config.Phi3Rate.ToFloat32(), 1, time.Second/4)
-	return nil
+
+	var err error
+	m.wave, err = m.getWaveMode(config.WaveMode)
+	return err
 }
 
 func (m *Module) Tick(deltaTime time.Duration) {
 	t := (m.t + deltaTime) % m.interval
-
-	x0 := float32(2.0 * math.Pi * t.Seconds() / m.interval.Seconds())
-	cv0 := units.CV((math.Sin(float64(x0)) + 1.0) / 2.0)
-
+	cv0 := m.wave.Get(t, m.interval)
 	m.degree0(cv0)
 	m.t = t
 }
