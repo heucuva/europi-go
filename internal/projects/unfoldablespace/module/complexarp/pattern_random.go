@@ -10,7 +10,7 @@ type patternRandom struct {
 	patRange units.VOct
 	patPitch units.VOct
 
-	keyboard *keyboard
+	scale scale
 
 	noise     noiseWhite
 	prevNoise float32
@@ -38,5 +38,5 @@ func (p *patternRandom) Next() units.VOct {
 	voct := p.patRange*units.VOct(curNoise) + p.patPitch
 	oct, v := math.Modf(float64(voct.ToFloat32()))
 
-	return p.quantizer.QuantizeToValue(float32(v), p.keyboard.keys) + units.VOct(oct)
+	return p.quantizer.QuantizeToValue(float32(v), p.scale) + units.VOct(oct)
 }

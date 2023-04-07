@@ -2,7 +2,6 @@ package complexenvelope
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/heucuva/europi/units"
@@ -18,15 +17,15 @@ func (e *envelope) Init(config EnvelopeConfig) error {
 		out = func(cv units.CV) {}
 	}
 
-	switch strings.ToLower(config.Mode) {
-	case "ad":
+	switch config.Mode {
+	case EnvelopeModeAD:
 		attackDur := time.Duration(float32(time.Second) * config.Attack.ToFloat32())
 		decayDur := time.Duration(float32(time.Second) * config.Decay.ToFloat32())
-		amode, err := e.getModeFunc(config.AttackMode)
+		amode, err := e.getFunctionModeCalc(config.AttackMode)
 		if err != nil {
 			return err
 		}
-		dmode, err := e.getModeFunc(config.ReleaseMode)
+		dmode, err := e.getFunctionModeCalc(config.ReleaseMode)
 		if err != nil {
 			return err
 		}
@@ -55,17 +54,4 @@ func (e *envelope) Trigger() {
 
 func (e *envelope) Tick(deltaTime time.Duration) {
 	e.model.Tick(deltaTime)
-}
-
-func (e envelope) getModeFunc(mode string) (modeFunc, error) {
-	switch strings.ToLower(mode) {
-	case "linear":
-		return modeFuncLinear, nil
-	case "exponential":
-		return modeFuncExponential, nil
-	case "quartic":
-		return modeFuncQuartic, nil
-	default:
-		return nil, fmt.Errorf("unhandled attack mode: %q", mode)
-	}
 }

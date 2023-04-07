@@ -5,7 +5,7 @@ import (
 )
 
 type Config struct {
-	WaveMode  string
+	WaveMode  WaveMode
 	Phi3Rate  units.CV
 	SkewRate  units.CV
 	SkewShape units.CV
