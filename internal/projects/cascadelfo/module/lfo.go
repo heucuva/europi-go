@@ -1,4 +1,4 @@
-package cascadelfo
+package module
 
 import (
 	"math"
@@ -58,7 +58,7 @@ type lfo struct {
 
 func (o *lfo) Update(delta float32) {
 	l := len(lfoTriangle)
-	newp := o.pos + delta/float32(l)
+	newp := o.pos + delta
 	p, f := math.Modf(float64(newp))
 	for int(p) >= l {
 		newp -= float32(l)
@@ -78,4 +78,8 @@ func (o *lfo) Update(delta float32) {
 
 		o.out(cv)
 	}
+}
+
+func (o *lfo) Reset() {
+	o.pos = 0
 }

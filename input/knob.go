@@ -5,6 +5,7 @@ import (
 	"math"
 
 	europim "github.com/heucuva/europi/math"
+	"github.com/heucuva/europi/units"
 )
 
 // A struct for handling the reading of knob voltage and position.
@@ -33,6 +34,16 @@ func (k *Knob) Percent() float32 {
 // ReadVoltage return the current read voltage between 0.0 and 10.0 volts.
 func (k *Knob) ReadVoltage() float32 {
 	return k.Percent() * MaxVoltage
+}
+
+// ReadCV returns the current read voltage as a CV value.
+func (k *Knob) ReadCV() units.CV {
+	return units.CV(k.Percent())
+}
+
+// ReadCV returns the current read voltage as a V/Octave value.
+func (k *Knob) ReadVOct() units.VOct {
+	return units.VOct(k.ReadVoltage())
 }
 
 // Range return a value between 0 and the given steps (not inclusive) based on the range of the knob's position.

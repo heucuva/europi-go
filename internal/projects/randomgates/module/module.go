@@ -1,20 +1,21 @@
-package randomgates
+package module
 
 import (
 	"math/rand"
 	"time"
 )
 
-type Module struct {
-	rem  time.Duration
-	gate [1]func(high bool)
-	dur  time.Duration
+type RandomGates struct {
+	rem    time.Duration
+	gate   [1]func(high bool)
+	chance float32
+	dur    time.Duration
 }
 
 func noop(_ bool) {
 }
 
-func (m *Module) Init(config Config) error {
+func (m *RandomGates) Init(config Config) error {
 	for i := range m.gate {
 		f := config.Gate[i]
 		if f == nil {
@@ -22,19 +23,22 @@ func (m *Module) Init(config Config) error {
 		}
 		m.gate[i] = f
 	}
+	m.chance = config.Chance
 	m.dur = config.Duration
 	return nil
 }
 
-const oneThird = 1.0 / 3.0
-
-func (m *Module) Clock() {
+func (m *RandomGates) Clock(high bool) {
 	if m.rem > 0 {
 		// disallow updates while in an active gate period
 		return
 	}
 
-	if rand.Float32() < oneThird {
+	if !high {
+		return
+	}
+
+	if rand.Float32() < m.chance {
 		m.rem = m.dur
 		for _, gate := range m.gate {
 			gate(true)
@@ -42,7 +46,7 @@ func (m *Module) Clock() {
 	}
 }
 
-func (m *Module) Tick(deltaTime time.Duration) {
+func (m *RandomGates) Tick(deltaTime time.Duration) {
 	if m.rem > 0 {
 		m.rem -= deltaTime
 		if m.rem <= 0 {

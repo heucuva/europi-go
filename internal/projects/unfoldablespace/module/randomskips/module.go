@@ -7,7 +7,7 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-type Module struct {
+type RandomSkips struct {
 	gate   [1]gate
 	chance float32
 }
@@ -15,7 +15,7 @@ type Module struct {
 func noop(_ bool) {
 }
 
-func (m *Module) Init(config Config) error {
+func (m *RandomSkips) Init(config Config) error {
 	m.chance = config.Chance
 	for i := range m.gate {
 		f := config.Gate[i]
@@ -28,7 +28,7 @@ func (m *Module) Init(config Config) error {
 	return nil
 }
 
-func (m *Module) Gate(gate int, high bool) {
+func (m *RandomSkips) Gate(gate int, high bool) {
 	if gate < 0 || gate > len(m.gate) {
 		panic("gate: out of range")
 	}
@@ -52,7 +52,7 @@ func (m *Module) Gate(gate int, high bool) {
 	}
 }
 
-func (m *Module) SetCV(gate int, cv units.CV) {
+func (m *RandomSkips) SetCV(gate int, cv units.CV) {
 	if gate < 0 || gate > len(m.gate) {
 		panic("gate: out of range")
 	}
@@ -61,6 +61,6 @@ func (m *Module) SetCV(gate int, cv units.CV) {
 	g.chance = m.chance * float32(cv)
 }
 
-func (m *Module) Tick(deltaTime time.Duration) {
+func (m *RandomSkips) Tick(deltaTime time.Duration) {
 
 }

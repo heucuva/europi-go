@@ -9,7 +9,7 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-type Module struct {
+type ComplexRandom struct {
 	attenA     units.CV
 	outA       func(cv units.CV)
 	attenB     units.CV
@@ -32,7 +32,7 @@ const (
 func noop(_ units.CV) {
 }
 
-func (m *Module) Init(config Config) error {
+func (m *ComplexRandom) Init(config Config) error {
 	var err error
 	m.clock, err = getClock(config.ClockRange)
 	if err != nil {
@@ -61,7 +61,7 @@ func (m *Module) Init(config Config) error {
 	return nil
 }
 
-func (m *Module) Tick(deltaTime time.Duration) {
+func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 	triggered := m.clock.Tick(deltaTime)
 
 	if triggered {
@@ -88,7 +88,7 @@ func (m *Module) Tick(deltaTime time.Duration) {
 	}
 }
 
-func (m *Module) processTrigger() {
+func (m *ComplexRandom) processTrigger() {
 	if rand.Float32() < m.gd.ToFloat32() {
 		return
 	}

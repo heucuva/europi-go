@@ -10,7 +10,7 @@ type Config struct {
 	SetMorph  func(cv units.CV)
 	SetLFOCV  func(cv units.CV)
 
-	OnClock           func()
+	OnClock           func(high bool)
 	OnTrigOuputGate1  func(high bool)
 	OnSkipSetCV1      func(cv units.CV)
 	OnSkipOutputGate1 func(high bool)

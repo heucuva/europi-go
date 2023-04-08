@@ -7,7 +7,7 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-type Module struct {
+type ThreePhaseLFO struct {
 	t         time.Duration
 	interval  time.Duration
 	wave      wave
@@ -19,7 +19,7 @@ type Module struct {
 func noop(_ units.CV) {
 }
 
-func (m *Module) Init(config Config) error {
+func (m *ThreePhaseLFO) Init(config Config) error {
 	m.degree0 = config.Degree0
 	if m.degree0 == nil {
 		m.degree0 = noop
@@ -42,7 +42,7 @@ func (m *Module) Init(config Config) error {
 	return err
 }
 
-func (m *Module) Tick(deltaTime time.Duration) {
+func (m *ThreePhaseLFO) Tick(deltaTime time.Duration) {
 	t := (m.t + deltaTime) % m.interval
 	cv0, cv120, cv240 := m.wave.Get(t, m.interval)
 	m.t = t

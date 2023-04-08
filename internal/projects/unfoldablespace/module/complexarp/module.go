@@ -6,12 +6,12 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-type Module struct {
+type ComplexArp struct {
 	out        func(voct units.VOct)
 	arpPattern pattern
 }
 
-func (m *Module) Init(config Config) error {
+func (m *ComplexArp) Init(config Config) error {
 	var err error
 	m.arpPattern, err = getArpPattern(config)
 	if err != nil {
@@ -23,12 +23,12 @@ func (m *Module) Init(config Config) error {
 	return nil
 }
 
-func (m *Module) ArpClock(high bool) {
+func (m *ComplexArp) ArpClock(high bool) {
 	if high {
 		voct := m.arpPattern.Next()
 		m.out(voct)
 	}
 }
 
-func (m *Module) Tick(deltaTime time.Duration) {
+func (m *ComplexArp) Tick(deltaTime time.Duration) {
 }

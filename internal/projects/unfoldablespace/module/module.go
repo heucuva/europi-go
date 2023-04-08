@@ -3,28 +3,28 @@ package module
 import (
 	"time"
 
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/cascadelfo"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/clockgenerator"
+	cascadelfo "github.com/heucuva/europi/internal/projects/cascadelfo/module"
+	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
+	randomgates "github.com/heucuva/europi/internal/projects/randomgates/module"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexarp"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexenvelope"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexrandom"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/randomgates"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/randomskips"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/threephaselfo"
 	"github.com/heucuva/europi/units"
 )
 
 type UnfoldableSpace struct {
-	clock clockgenerator.Module
-	harm  complexarp.Module
-	lfo   cascadelfo.Module
-	trig  randomgates.Module
-	skip  randomskips.Module
-	env   complexenvelope.Module
-	mod   threephaselfo.Module
-	rnd   complexrandom.Module
+	clock clockgenerator.ClockGenerator
+	harm  complexarp.ComplexArp
+	lfo   cascadelfo.CascadeLFO
+	trig  randomgates.RandomGates
+	skip  randomskips.RandomSkips
+	env   complexenvelope.ComplexEnvelope
+	mod   threephaselfo.ThreePhaseLFO
+	rnd   complexrandom.ComplexRandom
 
-	onClock           func()
+	onClock           func(high bool)
 	onTrigOutputGate1 func(high bool)
 	onSkipSetCV1      func(cv units.CV)
 	onSkipOutputGate1 func(high bool)
@@ -50,6 +50,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		Gate: [1]func(high bool){
 			m.trigOuputGate1, // Gate 1
 		},
+		Chance:   0.333333,
 		Duration: time.Millisecond * 200,
 	}); err != nil {
 		return err
@@ -147,7 +148,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 }
 
 func (m *UnfoldableSpace) Clock() {
-	m.trigClock()
+	m.trigClock(true)
 }
 
 func (m *UnfoldableSpace) EnableInternalClock(enabled bool) {
@@ -173,11 +174,11 @@ func (m *UnfoldableSpace) Tick(deltaTime time.Duration) {
 	m.rnd.Tick(deltaTime)
 }
 
-func (m *UnfoldableSpace) trigClock() {
+func (m *UnfoldableSpace) trigClock(high bool) {
 	if m.onClock != nil {
-		m.onClock()
+		m.onClock(high)
 	}
-	m.trig.Clock()
+	m.trig.Clock(high)
 }
 
 func (m *UnfoldableSpace) trigOuputGate1(high bool) {

@@ -8,7 +8,7 @@ const (
 	WaveModeSine = WaveMode(iota)
 )
 
-func (m *Module) getWaveMode(mode WaveMode) (wave, error) {
+func (m *ThreePhaseLFO) getWaveMode(mode WaveMode) (wave, error) {
 	switch mode {
 	case WaveModeSine:
 		return &waveSine{}, nil

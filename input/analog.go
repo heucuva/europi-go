@@ -4,6 +4,7 @@ import (
 	"machine"
 
 	europim "github.com/heucuva/europi/math"
+	"github.com/heucuva/europi/units"
 )
 
 const (
@@ -45,6 +46,19 @@ func (a *Analog) Percent() float32 {
 // ReadVoltage return the current read voltage between 0.0 and 10.0 volts.
 func (a *Analog) ReadVoltage() float32 {
 	return a.Percent() * MaxVoltage
+}
+
+// ReadCV returns the current read voltage as a CV value.
+func (a *Analog) ReadCV() units.CV {
+	// we can't use a.Percent() here, because we might get over 5.0 volts input
+	// just clamp it
+	v := a.ReadVoltage()
+	return units.CV(europim.Clamp(v/5.0, 0.0, 1.0))
+}
+
+// ReadCV returns the current read voltage as a V/Octave value.
+func (a *Analog) ReadVOct() units.VOct {
+	return units.VOct(a.ReadVoltage())
 }
 
 // Range return a value between 0 and the given steps (not inclusive) based on the range of the analog input.

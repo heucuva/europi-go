@@ -5,6 +5,7 @@ import (
 	"machine"
 
 	europim "github.com/heucuva/europi/math"
+	"github.com/heucuva/europi/units"
 )
 
 const (
@@ -26,6 +27,8 @@ var defaultPeriod uint64 = 500
 type Output interface {
 	Get() uint32
 	SetVoltage(v float32)
+	SetCV(cv units.CV)
+	SetVOct(voct units.VOct)
 	Set(v bool)
 	On()
 	Off()
@@ -81,6 +84,16 @@ func (o *output) SetVoltage(v float32) {
 	cv := float32(invertedCv) - CalibratedOffset
 	o.pwm.Set(o.ch, uint32(cv))
 	o.v = v
+}
+
+// SetCV sets the current output voltage based on a CV value
+func (o *output) SetCV(cv units.CV) {
+	o.SetVoltage(cv.ToVolts())
+}
+
+// SetCV sets the current output voltage based on a V/Octave value
+func (o *output) SetVOct(voct units.VOct) {
+	o.SetVoltage(voct.ToVolts())
 }
 
 // On sets the current voltage high at 10.0v.

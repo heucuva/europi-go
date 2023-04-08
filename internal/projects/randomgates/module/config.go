@@ -1,4 +1,4 @@
-package randomgates
+package module
 
 import (
 	"time"
@@ -6,5 +6,6 @@ import (
 
 type Config struct {
 	Gate     [1]func(high bool)
+	Chance   float32
 	Duration time.Duration
 }
