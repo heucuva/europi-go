@@ -7,10 +7,10 @@ import (
 	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
 	complexarp "github.com/heucuva/europi/internal/projects/complexarp/module"
 	complexenvelope "github.com/heucuva/europi/internal/projects/complexenvelope/module"
+	complexrandom "github.com/heucuva/europi/internal/projects/complexrandom/module"
 	randomgates "github.com/heucuva/europi/internal/projects/randomgates/module"
 	randomskips "github.com/heucuva/europi/internal/projects/randomskips/module"
 	threephaselfo "github.com/heucuva/europi/internal/projects/threephaselfo/module"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexrandom"
 	"github.com/heucuva/europi/units"
 )
 

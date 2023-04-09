@@ -1,4 +1,4 @@
-package complexrandom
+package module
 
 import (
 	"math"
@@ -15,6 +15,7 @@ type ComplexRandom struct {
 	attenB     units.CV
 	outB       func(cv units.CV)
 	clock      clock
+	slewB      units.CV
 	slewLength time.Duration
 	slewT      time.Duration
 	slewStart  units.CV
@@ -39,6 +40,8 @@ func (m *ComplexRandom) Init(config Config) error {
 		return err
 	}
 
+	m.SetClockRate(config.ClockSpeed)
+
 	m.outA = config.SampleOutA
 	if m.outA == nil {
 		m.outA = noop
@@ -52,13 +55,45 @@ func (m *ComplexRandom) Init(config Config) error {
 	m.attenA = config.SampleAttenuatorA
 	m.attenB = config.SampleAttenuatorB
 
-	m.slewLength = europim.Lerp(config.SampleSlewB.ToFloat32(), 0, time.Second)
-	m.slewT = 0
+	m.SetSlewB(config.SampleSlewB)
 
 	m.gd = config.GateDensity
 	m.pd = config.PulseStageDivider
 
 	return nil
+}
+
+func (m *ComplexRandom) SetClockRate(cv units.CV) {
+	m.clock.SetRate(cv)
+}
+
+func (m *ComplexRandom) ClockRate() units.CV {
+	return m.clock.Rate()
+}
+
+func (m *ComplexRandom) SetSlewB(cv units.CV) {
+	if m.slewB == cv {
+		// no change
+		return
+	}
+
+	m.slewB = cv
+	m.slewLength = europim.Lerp(m.slewB.ToFloat32(), 0, time.Second)
+	if m.slewLength < m.slewT {
+		m.slewT = 0
+	}
+}
+
+func (m *ComplexRandom) SlewB() units.CV {
+	return m.slewB
+}
+
+func (m *ComplexRandom) Gate(high bool) {
+	// TODO
+}
+
+func (m *ComplexRandom) SetSample(cv units.CV) {
+	// TODO
 }
 
 func (m *ComplexRandom) Tick(deltaTime time.Duration) {
@@ -75,15 +110,18 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 		} else {
 			t := europim.Clamp(m.slewT+deltaTime, 0, m.slewLength)
 			x := float32(t.Seconds() / m.slewLength.Seconds())
+
+			var b units.CV
 			if x >= 1 {
 				t = 0
-			}
-			m.slewT = t
-			b := europim.Clamp(europim.Lerp(0.00144151*(x*x)+0.209508*x-0.20705, m.slewStart, m.slewEnd), m.slewStart, m.slewEnd)
-			m.outB(b)
-			if m.slewT >= m.slewLength {
+				b = m.slewEnd
 				m.slewStart = m.slewEnd
+			} else {
+				b = europim.Clamp(europim.Lerp(x, m.slewStart, m.slewEnd), m.slewStart, m.slewEnd)
 			}
+
+			m.slewT = t
+			m.outB(b)
 		}
 	}
 }

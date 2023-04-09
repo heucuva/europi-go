@@ -14,46 +14,27 @@ const (
 )
 
 type pattern interface {
-	Init(config Config) error
-	Next() units.VOct
-	SetArpPitch(voct units.VOct)
-	SetArpRange(voct units.VOct)
-	SetScale(s scale)
-	Scale() Scale
-	ScaleName() string
-	ArpRange() units.VOct
+	Init(config Config, m *ComplexArp) error
+	Next(m *ComplexArp) units.VOct
+	UpdateScale(s scale)
 }
 
-func getArpPattern(config Config) (pattern, error) {
-	arpScale, err := getScale(config.Scale)
-	if err != nil {
-		return nil, err
-	}
-
-	arpQuant, err := getArpQuantizer(config.Quantizer)
-	if err != nil {
-		return nil, err
-	}
-
+func (m *ComplexArp) setArpPattern(config Config) error {
 	var arpPattern pattern
 	switch config.ArpPattern {
 	case PatternBrownian:
-		arpPattern = &patternBrownian{
-			scale:     arpScale,
-			quantizer: arpQuant,
-		}
+		arpPattern = &patternBrownian{}
 	case PatternRandom:
-		arpPattern = &patternRandom{
-			scale:     arpScale,
-			quantizer: arpQuant,
-		}
+		arpPattern = &patternRandom{}
 	default:
-		return nil, fmt.Errorf("unsupported arp pattern: %d", config.ArpPattern)
+		return fmt.Errorf("unsupported arp pattern: %d", config.ArpPattern)
 	}
 
-	if err := arpPattern.Init(config); err != nil {
-		return nil, err
+	if err := arpPattern.Init(config, m); err != nil {
+		return err
 	}
 
-	return arpPattern, nil
+	m.arpPattern = arpPattern
+
+	return nil
 }

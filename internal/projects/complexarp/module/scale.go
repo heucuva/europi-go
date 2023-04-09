@@ -30,29 +30,31 @@ type scale interface {
 	Name() string
 }
 
-func getScale(mode Scale) (scale, error) {
+func (m *ComplexArp) setScale(mode Scale) error {
 	switch mode {
 	case ScaleC_Lydian:
-		return &scaleCLydian{}, nil
+		m.scale = &scaleCLydian{}
 	case ScaleC_Major:
-		return &scaleCMajor{}, nil
+		m.scale = &scaleCMajor{}
 	case ScaleC_7:
-		return &scaleC7{}, nil
+		m.scale = &scaleC7{}
 	case ScaleC_Suspended:
-		return &scaleCSuspended{}, nil
+		m.scale = &scaleCSuspended{}
 	case ScaleC_Harmonic_5:
-		return &scaleCHarmonic5{}, nil
+		m.scale = &scaleCHarmonic5{}
 	case ScaleC_Dorian:
-		return &scaleCDorian{}, nil
+		m.scale = &scaleCDorian{}
 	case ScaleC_Minor:
-		return &scaleCMinor{}, nil
+		m.scale = &scaleCMinor{}
 	case ScaleC_Phrygian:
-		return &scaleCPhrygian{}, nil
+		m.scale = &scaleCPhrygian{}
 	case ScaleC_Diminished:
-		return &scaleCDiminished{}, nil
+		m.scale = &scaleCDiminished{}
 	case ScaleC_Augmented:
-		return &scaleCAugmented{}, nil
+		m.scale = &scaleCAugmented{}
 	default:
-		return nil, fmt.Errorf("unsupported scale: %d", mode)
+		return fmt.Errorf("unsupported scale: %d", mode)
 	}
+
+	return nil
 }

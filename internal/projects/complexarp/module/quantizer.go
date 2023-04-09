@@ -18,13 +18,15 @@ type quantizer[T any] interface {
 	QuantizeToValue(in float32, list []T) T
 }
 
-func getArpQuantizer(mode Quantizer) (quantizer[units.VOct], error) {
+func (m *ComplexArp) setArpQuantizer(mode Quantizer) error {
 	switch mode {
 	case QuantizerRound:
-		return &quantizerRound[units.VOct]{}, nil
+		m.quantizer = &quantizerRound[units.VOct]{}
 	case QuantizerTrunc:
-		return &quantizerTrunc[units.VOct]{}, nil
+		m.quantizer = &quantizerTrunc[units.VOct]{}
 	default:
-		return nil, fmt.Errorf("unsupported quantizer mode: %d", mode)
+		return fmt.Errorf("unsupported quantizer mode: %d", mode)
 	}
+
+	return nil
 }
