@@ -1,4 +1,4 @@
-package randomskips
+package module
 
 import (
 	"math/rand"
@@ -34,20 +34,17 @@ func (m *RandomSkips) Gate(gate int, high bool) {
 	}
 
 	g := &m.gate[gate]
-	prev := g.enabled
+	prev := g.active
+	lastInput := g.lastInput
 	next := prev
+	g.lastInput = high
 
-	switch high {
-	case true:
-		if rand.Float32() < g.chance {
-			next = true
-		}
-	case false:
-		next = false
+	if high != lastInput && rand.Float32() < g.chance {
+		next = !prev
 	}
 
 	if prev != next {
-		g.enabled = next
+		g.active = next
 		g.out(next)
 	}
 }
@@ -58,7 +55,15 @@ func (m *RandomSkips) SetCV(gate int, cv units.CV) {
 	}
 
 	g := &m.gate[gate]
-	g.chance = m.chance * float32(cv)
+	g.chance = m.chance * cv.ToFloat32()
+}
+
+func (m *RandomSkips) SetChance(chance float32) {
+	m.chance = chance
+}
+
+func (m *RandomSkips) Chance() float32 {
+	return m.chance
 }
 
 func (m *RandomSkips) Tick(deltaTime time.Duration) {

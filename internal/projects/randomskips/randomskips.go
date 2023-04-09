@@ -7,18 +7,18 @@ import (
 
 	"github.com/heucuva/europi"
 	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
-	"github.com/heucuva/europi/internal/projects/randomgates/module"
+	"github.com/heucuva/europi/internal/projects/randomskips/module"
 	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/output"
 )
 
 var (
-	trig  module.RandomGates
+	skip  module.RandomSkips
 	clock clockgenerator.ClockGenerator
 )
 
 func startLoop(e *europi.EuroPi) {
-	if err := trig.Init(module.Config{
+	if err := skip.Init(module.Config{
 		Gate: [1]func(high bool){
 			func(high bool) { // Gate 1
 				if high {
@@ -28,22 +28,24 @@ func startLoop(e *europi.EuroPi) {
 				}
 			},
 		},
-		Chance:   0.333333,
-		Duration: time.Millisecond * 200,
+		Chance: 0.333333,
 	}); err != nil {
 		panic(err)
 	}
 
 	if err := clock.Init(clockgenerator.Config{
-		BPM:      120.0,
-		Enabled:  false,
-		ClockOut: trig.Clock,
+		BPM:     120.0,
+		Enabled: false,
+		ClockOut: func(high bool) {
+			skip.Gate(0, high)
+		},
 	}); err != nil {
 		panic(err)
 	}
 
 	e.DI.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
-		trig.Clock(e.DI.Value())
+		high := e.DI.Value()
+		skip.Gate(0, high)
 	})
 
 	e.B1.HandlerWithDebounce(func(p machine.Pin) {
@@ -62,11 +64,11 @@ const (
 )
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	trig.SetChance(e.K1.ReadCV().ToFloat32())
+	skip.SetChance(e.K1.ReadCV().ToFloat32())
 	cv := e.K2.ReadCV()
 	clock.SetBPM(europim.Lerp[float32](cv.ToFloat32(), 0.01, 240.0))
 	clock.Tick(deltaTime)
-	trig.Tick(deltaTime)
+	skip.Tick(deltaTime)
 
 	displayDelay += deltaTime
 	if displayDelay > displayRate {
@@ -78,7 +80,7 @@ func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 			disp.DrawHLine(0, 0, 7, output.White)
 			disp.WriteLine(fmt.Sprintf("BPM:%3.1f", clock.BPM()), 64, line1y)
 		}
-		disp.WriteLine(fmt.Sprintf("Chn:%3.1f%%", trig.Chance()*100.0), 0, line1y)
+		disp.WriteLine(fmt.Sprintf("Chn:%3.1f%%", skip.Chance()*100.0), 0, line1y)
 		disp.WriteLine(fmt.Sprintf("1:%2.1f", e.CV1.Voltage()), 0, line2y)
 		disp.Display()
 	}

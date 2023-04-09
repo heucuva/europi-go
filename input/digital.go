@@ -38,14 +38,23 @@ func (d *Digital) Value() bool {
 
 // Handler sets the callback function to be call when a rising edge is detected.
 func (d *Digital) Handler(handler func(p machine.Pin)) {
-	d.HandlerWithDebounce(handler, 0)
+	d.HandlerExWithDebounce(machine.PinRising, handler, 0)
+}
+
+// HandlerEx sets the callback function to be call when a specified edge is (or edges are) detected.
+func (d *Digital) HandlerEx(pinChange machine.PinChange, handler func(p machine.Pin)) {
+	d.HandlerExWithDebounce(pinChange, handler, 0)
 }
 
 // Handler sets the callback function to be call when a rising edge is detected and debounce delay time has elapsed.
 func (d *Digital) HandlerWithDebounce(handler func(p machine.Pin), delay time.Duration) {
+	d.HandlerExWithDebounce(machine.PinRising, handler, delay)
+}
+
+func (d *Digital) HandlerExWithDebounce(pinChange machine.PinChange, handler func(p machine.Pin), delay time.Duration) {
 	d.callback = handler
 	d.debounceDelay = delay
-	d.Pin.SetInterrupt(machine.PinFalling, d.debounceWrapper)
+	d.Pin.SetInterrupt(pinChange, d.debounceWrapper)
 }
 
 func (d *Digital) debounceWrapper(p machine.Pin) {

@@ -25,11 +25,21 @@ func NewButton(pin machine.Pin) *Button {
 
 // Handler sets the callback function to be call when the button is pressed.
 func (b *Button) Handler(handler func(p machine.Pin)) {
-	b.HandlerWithDebounce(handler, 0)
+	b.HandlerExWithDebounce(machine.PinRising, handler, 0)
 }
 
-// Handler sets the callback function to be call when the button is pressed and debounce delay time has elapsed.
+// HandlerEx sets the callback function to be call when the button changes in a specified way.
+func (b *Button) HandlerEx(pinChange machine.PinChange, handler func(p machine.Pin)) {
+	b.HandlerExWithDebounce(pinChange, handler, 0)
+}
+
+// HandlerWithDebounce sets the callback function to be call when the button is pressed and debounce delay time has elapsed.
 func (b *Button) HandlerWithDebounce(handler func(p machine.Pin), delay time.Duration) {
+	b.HandlerExWithDebounce(machine.PinRising, handler, delay)
+}
+
+// HandlerExWithDebounce sets the callback function to be call when the button changes in a specified way and the debounce delay time has elapsed.
+func (b *Button) HandlerExWithDebounce(pinChange machine.PinChange, handler func(p machine.Pin), delay time.Duration) {
 	b.callback = handler
 	b.debounceDelay = delay
 	b.Pin.SetInterrupt(machine.PinFalling, b.debounceWrapper)

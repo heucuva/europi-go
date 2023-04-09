@@ -6,8 +6,7 @@ import (
 )
 
 type RandomGates struct {
-	rem    time.Duration
-	gate   [1]func(high bool)
+	gate   [1]gate
 	chance float32
 	dur    time.Duration
 }
@@ -21,37 +20,50 @@ func (m *RandomGates) Init(config Config) error {
 		if f == nil {
 			f = noop
 		}
-		m.gate[i] = f
+		m.gate[i] = gate{
+			out: f,
+		}
 	}
 	m.chance = config.Chance
 	m.dur = config.Duration
 	return nil
 }
 
+func (m *RandomGates) SetChance(chance float32) {
+	m.chance = chance
+}
+
+func (m *RandomGates) Chance() float32 {
+	return m.chance
+}
+
 func (m *RandomGates) Clock(high bool) {
-	if m.rem > 0 {
-		// disallow updates while in an active gate period
-		return
-	}
+	for i := range m.gate {
+		g := &m.gate[i]
 
-	if !high {
-		return
-	}
-
-	if rand.Float32() < m.chance {
-		m.rem = m.dur
-		for _, gate := range m.gate {
-			gate(true)
+		if g.rem > 0 || rand.Float32() >= m.chance {
+			// disallow updates while in an active gate period or we fail our chance
+			continue
 		}
+
+		g.level = !g.level
+		if g.level {
+			g.rem = m.dur
+		}
+		g.out(g.level)
 	}
 }
 
 func (m *RandomGates) Tick(deltaTime time.Duration) {
-	if m.rem > 0 {
-		m.rem -= deltaTime
-		if m.rem <= 0 {
-			for _, gate := range m.gate {
-				gate(false)
+	for i := range m.gate {
+		g := &m.gate[i]
+
+		if g.rem > 0 && g.level {
+			g.rem -= deltaTime
+			if g.rem <= 0 {
+				g.level = false
+				g.rem = 0
+				g.out(g.level)
 			}
 		}
 	}
