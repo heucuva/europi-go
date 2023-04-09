@@ -1,4 +1,4 @@
-package complexarp
+package module
 
 import (
 	"math"
@@ -31,7 +31,7 @@ func (p *patternBrownian) Init(config Config) error {
 	// impossible value, so can't throw out any item
 	p.prevNoise = -1.5
 
-	p.deltaKey = units.VOct(1) / units.VOct(len(p.scale))
+	p.SetScale(p.scale)
 
 	// generate a random 'key' in range.
 	// really just garbage that will get cleaned up by the
@@ -73,8 +73,35 @@ func (p *patternBrownian) next(prevKey units.VOct) units.VOct {
 		}
 
 		oct, v := math.Modf(float64(voct.ToFloat32()))
-		nextKey = p.quantizer.QuantizeToValue(float32(v), p.scale) + units.VOct(oct)
+		keys := p.scale.Keys()
+		nextKey = p.quantizer.QuantizeToValue(float32(v), keys) + units.VOct(oct)
 	}
 
 	return nextKey
+}
+
+func (p *patternBrownian) SetArpPitch(voct units.VOct) {
+	p.patPitch = voct
+}
+
+func (p *patternBrownian) SetArpRange(voct units.VOct) {
+	p.patRange = voct
+}
+
+func (p *patternBrownian) SetScale(s scale) {
+	p.scale = s
+	keys := s.Keys()
+	p.deltaKey = units.VOct(1) / units.VOct(len(keys))
+}
+
+func (p *patternBrownian) Scale() Scale {
+	return p.scale.Mode()
+}
+
+func (p *patternBrownian) ScaleName() string {
+	return p.scale.Name()
+}
+
+func (p *patternBrownian) ArpRange() units.VOct {
+	return p.patRange
 }

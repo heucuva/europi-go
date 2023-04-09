@@ -1,4 +1,4 @@
-package complexarp
+package module
 
 import (
 	"github.com/heucuva/europi/units"

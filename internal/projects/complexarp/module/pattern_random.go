@@ -1,4 +1,4 @@
-package complexarp
+package module
 
 import (
 	"math"
@@ -38,5 +38,31 @@ func (p *patternRandom) Next() units.VOct {
 	voct := p.patRange*units.VOct(curNoise) + p.patPitch
 	oct, v := math.Modf(float64(voct.ToFloat32()))
 
-	return p.quantizer.QuantizeToValue(float32(v), p.scale) + units.VOct(oct)
+	keys := p.scale.Keys()
+
+	return p.quantizer.QuantizeToValue(float32(v), keys) + units.VOct(oct)
+}
+
+func (p *patternRandom) SetArpPitch(voct units.VOct) {
+	p.patPitch = voct
+}
+
+func (p *patternRandom) SetArpRange(voct units.VOct) {
+	p.patRange = voct
+}
+
+func (p *patternRandom) SetScale(s scale) {
+	p.scale = s
+}
+
+func (p *patternRandom) Scale() Scale {
+	return p.scale.Mode()
+}
+
+func (p *patternRandom) ScaleName() string {
+	return p.scale.Name()
+}
+
+func (p *patternRandom) ArpRange() units.VOct {
+	return p.patRange
 }

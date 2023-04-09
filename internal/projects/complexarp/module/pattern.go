@@ -1,4 +1,4 @@
-package complexarp
+package module
 
 import (
 	"fmt"
@@ -16,6 +16,12 @@ const (
 type pattern interface {
 	Init(config Config) error
 	Next() units.VOct
+	SetArpPitch(voct units.VOct)
+	SetArpRange(voct units.VOct)
+	SetScale(s scale)
+	Scale() Scale
+	ScaleName() string
+	ArpRange() units.VOct
 }
 
 func getArpPattern(config Config) (pattern, error) {
