@@ -5,12 +5,12 @@ import (
 
 	cascadelfo "github.com/heucuva/europi/internal/projects/cascadelfo/module"
 	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
+	complexenvelope "github.com/heucuva/europi/internal/projects/complexenvelope/module"
 	randomgates "github.com/heucuva/europi/internal/projects/randomgates/module"
 	randomskips "github.com/heucuva/europi/internal/projects/randomskips/module"
+	threephaselfo "github.com/heucuva/europi/internal/projects/threephaselfo/module"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexarp"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexenvelope"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/complexrandom"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module/threephaselfo"
 	"github.com/heucuva/europi/units"
 )
 

@@ -1,4 +1,4 @@
-package threephaselfo
+package module
 
 import (
 	"math"
@@ -25,4 +25,8 @@ func (waveSine) Get(t, interval time.Duration) (units.CV, units.CV, units.CV) {
 	cv120 := units.CV((math.Sin(float64(x120)) + 1.0) / 2.0)
 	cv240 := units.CV((math.Sin(float64(x240)) + 1.0) / 2.0)
 	return cv0, cv120, cv240
+}
+
+func (waveSine) Mode() WaveMode {
+	return WaveModeSine
 }

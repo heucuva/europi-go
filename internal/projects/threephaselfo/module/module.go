@@ -1,4 +1,4 @@
-package threephaselfo
+package module
 
 import (
 	"time"
@@ -35,11 +35,34 @@ func (m *ThreePhaseLFO) Init(config Config) error {
 		m.degree240 = noop
 	}
 
-	m.interval = europim.Lerp(config.Phi3Rate.ToFloat32(), 1, time.Second/4)
+	m.SetRate(config.Phi3Rate)
 
 	var err error
 	m.wave, err = m.getWaveMode(config.WaveMode)
 	return err
+}
+
+func (m *ThreePhaseLFO) SetRate(cv units.CV) {
+	m.interval = europim.Lerp(cv.ToFloat32(), 1, time.Second/4)
+}
+
+func (m *ThreePhaseLFO) SetWaveCV(cv units.CV) {
+	mode := europim.Lerp(cv.ToFloat32(), WaveModeSine, cWaveModeCount-1)
+	if mode == m.wave.Mode() {
+		// no change
+		return
+	}
+
+	wave, err := m.getWaveMode(mode)
+	if err != nil {
+		panic(err)
+	}
+
+	m.wave = wave
+}
+
+func (m *ThreePhaseLFO) Wave() WaveMode {
+	return m.wave.Mode()
 }
 
 func (m *ThreePhaseLFO) Tick(deltaTime time.Duration) {

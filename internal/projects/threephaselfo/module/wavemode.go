@@ -1,4 +1,4 @@
-package threephaselfo
+package module
 
 import "fmt"
 
@@ -6,6 +6,9 @@ type WaveMode int
 
 const (
 	WaveModeSine = WaveMode(iota)
+
+	//===
+	cWaveModeCount
 )
 
 func (m *ThreePhaseLFO) getWaveMode(mode WaveMode) (wave, error) {

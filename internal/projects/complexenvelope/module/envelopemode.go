@@ -1,4 +1,4 @@
-package complexenvelope
+package module
 
 type EnvelopeMode int
 

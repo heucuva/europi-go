@@ -1,4 +1,4 @@
-package threephaselfo
+package module
 
 import (
 	"github.com/heucuva/europi/units"

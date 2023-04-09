@@ -20,7 +20,7 @@ The scope of this app is to drive the CV 1 through CV 6 outputs as triangle wave
 - CV 5 = triangle wave with 1:16 rate
 - CV 6 = triangle wave with 1:32 rate
 
-## Using Clock Generator
+## Using Cascading LFO
 
 ### Cascading LFOs
 
