@@ -13,6 +13,10 @@ type bootstrapConfig struct {
 	enableDisplayLogger bool
 	initRandom          bool
 
+	// user interface
+	ui            UserInterface
+	uiRefreshRate time.Duration
+
 	// lifecycle callbacks
 	onPostBootstrapConstructionFn PostBootstrapConstructionFunc
 	onPreInitializeComponentsFn   PreInitializeComponentsFunc

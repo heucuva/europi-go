@@ -3,6 +3,8 @@ package module
 import (
 	"fmt"
 	"time"
+
+	europim "github.com/heucuva/europi/math"
 )
 
 type ClockGenerator struct {
@@ -64,6 +66,18 @@ func (m *ClockGenerator) SetBPM(bpm float32) {
 	}
 	m.bpm = bpm
 	m.interval = time.Duration(float32(time.Minute) / bpm)
+}
+
+func (m *ClockGenerator) SetGateDuration(duration time.Duration) {
+	if duration == 0 {
+		duration = DefaultGateDuration
+	}
+
+	m.gateDuration = europim.Clamp(duration, time.Microsecond, m.interval-time.Microsecond)
+}
+
+func (m *ClockGenerator) GateDuration() time.Duration {
+	return m.gateDuration
 }
 
 func (m *ClockGenerator) Tick(deltaTime time.Duration) {

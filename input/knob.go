@@ -3,6 +3,7 @@ package input
 import (
 	"machine"
 	"math"
+	"runtime/interrupt"
 
 	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
@@ -57,8 +58,10 @@ func (k *Knob) Choice(numItems int) int {
 
 func (k *Knob) read() uint16 {
 	var sum int
+	state := interrupt.Disable()
 	for i := 0; i < int(k.samples); i++ {
 		sum += int(k.Get())
 	}
+	interrupt.Restore(state)
 	return uint16(sum / int(k.samples))
 }

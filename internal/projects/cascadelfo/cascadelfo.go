@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"machine"
 	"time"
 
 	"github.com/heucuva/europi"
 	"github.com/heucuva/europi/internal/projects/cascadelfo/module"
+	"github.com/heucuva/europi/internal/projects/cascadelfo/screen"
 	"github.com/heucuva/europi/units"
 )
 
@@ -37,32 +37,11 @@ func startLoop(e *europi.EuroPi) {
 	})
 }
 
-var (
-	displayDelay time.Duration
-)
-
-const (
-	displayRate       = time.Millisecond * 150
-	line1y      int16 = 11
-	line2y      int16 = 23
-)
-
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 	lfo.SetAttenuverter(e.K2.ReadCV())
 	lfo.SetRate(e.K1.ReadCV())
 	lfo.SetCV(e.AI.ReadCV())
 	lfo.Tick(deltaTime)
-
-	displayDelay += deltaTime
-	if displayDelay > displayRate {
-		displayDelay %= displayRate
-
-		disp := e.Display
-		disp.ClearBuffer()
-		disp.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f 3:%2.1f", e.CV1.Voltage(), e.CV2.Voltage(), e.CV3.Voltage()), 0, line1y)
-		disp.WriteLine(fmt.Sprintf("4:%2.1f 5:%2.1f 6:%2.1f", e.CV4.Voltage(), e.CV5.Voltage(), e.CV6.Voltage()), 0, line2y)
-		disp.Display()
-	}
 }
 
 func main() {
@@ -74,5 +53,9 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
+		europi.UI(&screen.Main{
+			LFO: &lfo,
+		}),
+		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

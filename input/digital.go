@@ -2,6 +2,7 @@ package input
 
 import (
 	"machine"
+	"runtime/interrupt"
 	"time"
 )
 
@@ -32,8 +33,11 @@ func (d *Digital) LastInput() time.Time {
 
 // Value returns true if the input is high (above 0.8v), else false.
 func (d *Digital) Value() bool {
+	state := interrupt.Disable()
 	// Invert signal to match expected behavior.
-	return !d.Pin.Get()
+	v := !d.Pin.Get()
+	interrupt.Restore(state)
+	return v
 }
 
 // Handler sets the callback function to be call when a rising edge is detected.
@@ -54,7 +58,9 @@ func (d *Digital) HandlerWithDebounce(handler func(p machine.Pin), delay time.Du
 func (d *Digital) HandlerExWithDebounce(pinChange machine.PinChange, handler func(p machine.Pin), delay time.Duration) {
 	d.callback = handler
 	d.debounceDelay = delay
+	state := interrupt.Disable()
 	d.Pin.SetInterrupt(pinChange, d.debounceWrapper)
+	interrupt.Restore(state)
 }
 
 func (d *Digital) debounceWrapper(p machine.Pin) {

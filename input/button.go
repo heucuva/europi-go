@@ -2,6 +2,7 @@ package input
 
 import (
 	"machine"
+	"runtime/interrupt"
 	"time"
 )
 
@@ -42,7 +43,9 @@ func (b *Button) HandlerWithDebounce(handler func(p machine.Pin), delay time.Dur
 func (b *Button) HandlerExWithDebounce(pinChange machine.PinChange, handler func(p machine.Pin), delay time.Duration) {
 	b.callback = handler
 	b.debounceDelay = delay
-	b.Pin.SetInterrupt(machine.PinFalling, b.debounceWrapper)
+	state := interrupt.Disable()
+	b.Pin.SetInterrupt(pinChange, b.debounceWrapper)
+	interrupt.Restore(state)
 }
 
 func (b *Button) debounceWrapper(p machine.Pin) {
@@ -61,6 +64,9 @@ func (b *Button) LastInput() time.Time {
 
 // Value returns true if button is currently pressed, else false.
 func (b *Button) Value() bool {
+	state := interrupt.Disable()
 	// Invert signal to match expected behavior.
-	return !b.Pin.Get()
+	v := !b.Pin.Get()
+	interrupt.Restore(state)
+	return v
 }

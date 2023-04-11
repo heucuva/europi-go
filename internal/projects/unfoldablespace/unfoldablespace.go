@@ -1,18 +1,30 @@
 package main
 
 import (
-	"fmt"
 	"machine"
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/screenbank"
+	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module"
-	"github.com/heucuva/europi/output"
+	"github.com/heucuva/europi/internal/projects/unfoldablespace/screen"
 	"github.com/heucuva/europi/units"
 )
 
 var (
-	unfold module.UnfoldableSpace
+	unfold     module.UnfoldableSpace
+	ui         *screenbank.ScreenBank
+	screenMain = screen.Main{
+		Unfold: &unfold,
+	}
+	screenClock = clockScreen.Settings{
+		Clock:           &unfold.ModClock,
+		MinBPM:          0.01,
+		MaxBPM:          240.0,
+		MinGateDuration: time.Millisecond * 1,
+		MaxGateDuration: time.Millisecond * 990,
+	}
 )
 
 func startLoop(e *europi.EuroPi) {
@@ -49,10 +61,6 @@ func startLoop(e *europi.EuroPi) {
 	e.DI.Handler(func(p machine.Pin) {
 		unfold.Clock()
 	})
-
-	e.B1.HandlerWithDebounce(func(p machine.Pin) {
-		unfold.ToggleInternalClock()
-	}, time.Millisecond*500)
 }
 
 var (
@@ -67,23 +75,18 @@ const (
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 	unfold.Tick(deltaTime)
-
-	displayDelay += deltaTime
-	if displayDelay > displayRate {
-		displayDelay %= displayRate
-
-		disp := e.Display
-		disp.ClearBuffer()
-		if unfold.InternalClockEnabled() {
-			disp.DrawHLine(0, 0, 7, output.White)
-		}
-		disp.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f 3:%2.1f", e.CV1.Voltage(), e.CV2.Voltage(), e.CV3.Voltage()), 0, line1y)
-		disp.WriteLine(fmt.Sprintf("4:%2.1f 5:%2.1f 6:%2.1f", e.CV4.Voltage(), e.CV5.Voltage(), e.CV6.Voltage()), 0, line2y)
-		disp.Display()
-	}
 }
 
 func main() {
+	var err error
+	ui, err = screenbank.NewScreenBank(
+		screenbank.WithScreen("main", &screenMain),
+		screenbank.WithScreen("clock", &screenClock),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// some options shown below are being explicitly set to their defaults
 	// only to showcase their existence.
 	europi.Bootstrap(
@@ -92,5 +95,7 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
+		europi.UI(ui),
+		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

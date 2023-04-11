@@ -15,14 +15,14 @@ import (
 )
 
 type UnfoldableSpace struct {
-	clock clockgenerator.ClockGenerator
-	harm  complexarp.ComplexArp
-	lfo   cascadelfo.CascadeLFO
-	trig  randomgates.RandomGates
-	skip  randomskips.RandomSkips
-	env   complexenvelope.ComplexEnvelope
-	mod   threephaselfo.ThreePhaseLFO
-	rnd   complexrandom.ComplexRandom
+	ModClock clockgenerator.ClockGenerator
+	ModArp   complexarp.ComplexArp
+	ModLFO   cascadelfo.CascadeLFO
+	ModTrig  randomgates.RandomGates
+	ModSkip  randomskips.RandomSkips
+	ModEnv   complexenvelope.ComplexEnvelope
+	ModMod   threephaselfo.ThreePhaseLFO
+	ModRnd   complexrandom.ComplexRandom
 
 	onClock           func(high bool)
 	onTrigOutputGate1 func(high bool)
@@ -38,7 +38,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	m.onSkipOutputGate1 = config.OnSkipOutputGate1
 	m.onLFOOutput5 = config.OnLFOOutput5
 
-	if err := m.clock.Init(clockgenerator.Config{
+	if err := m.ModClock.Init(clockgenerator.Config{
 		BPM:      120.0,
 		Enabled:  false,
 		ClockOut: m.trigClock,
@@ -46,7 +46,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		return err
 	}
 
-	if err := m.trig.Init(randomgates.Config{
+	if err := m.ModTrig.Init(randomgates.Config{
 		Gate: [1]func(high bool){
 			m.trigOuputGate1, // Gate 1
 		},
@@ -56,7 +56,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		return err
 	}
 
-	if err := m.mod.Init(threephaselfo.Config{
+	if err := m.ModMod.Init(threephaselfo.Config{
 		WaveMode:  threephaselfo.WaveModeSine,
 		Phi3Rate:  0.2,
 		SkewRate:  0.0,
@@ -66,7 +66,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		return err
 	}
 
-	if err := m.skip.Init(randomskips.Config{
+	if err := m.ModSkip.Init(randomskips.Config{
 		Gate: [1]func(high bool){
 			m.skipOutputGate1, // Gate1
 		},
@@ -75,7 +75,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		return err
 	}
 
-	if err := m.harm.Init(complexarp.Config{
+	if err := m.ModArp.Init(complexarp.Config{
 		ArpOut:     config.SetVOct,
 		ArpPattern: complexarp.PatternBrownian,
 		Scale:      complexarp.ScaleC_Major,
@@ -86,7 +86,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		return err
 	}
 
-	if err := m.lfo.Init(cascadelfo.Config{
+	if err := m.ModLFO.Init(cascadelfo.Config{
 		LFO: [8]func(cv units.CV){
 			nil,             // LFO 1
 			nil,             // LFO 2
@@ -103,7 +103,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		panic(err)
 	}
 
-	if err := m.env.Init(complexenvelope.Config{
+	if err := m.ModEnv.Init(complexenvelope.Config{
 		Env: [2]complexenvelope.EnvelopeConfig{
 			{ // 1
 				Out:         config.SetLevel,
@@ -116,7 +116,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 			{ // 2
 				Out: func(cv units.CV) {
 					config.SetLFOCV(cv)
-					m.lfo.SetCV(cv)
+					m.ModLFO.SetCV(cv)
 				},
 				Mode:        complexenvelope.EnvelopeModeAD,
 				AttackMode:  complexenvelope.FunctionModeLinear,
@@ -129,7 +129,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		return err
 	}
 
-	if err := m.rnd.Init(complexrandom.Config{
+	if err := m.ModRnd.Init(complexrandom.Config{
 		SampleOutA:        config.SetTimbre,
 		SampleOutB:        config.SetHarmo,
 		SampleAttenuatorA: 0.6,
@@ -152,61 +152,61 @@ func (m *UnfoldableSpace) Clock() {
 }
 
 func (m *UnfoldableSpace) EnableInternalClock(enabled bool) {
-	m.clock.SetEnabled(enabled)
+	m.ModClock.SetEnabled(enabled)
 }
 
 func (m *UnfoldableSpace) InternalClockEnabled() bool {
-	return m.clock.Enabled()
+	return m.ModClock.Enabled()
 }
 
 func (m *UnfoldableSpace) ToggleInternalClock() {
-	m.clock.Toggle()
+	m.ModClock.Toggle()
 }
 
 func (m *UnfoldableSpace) Tick(deltaTime time.Duration) {
-	m.clock.Tick(deltaTime)
-	m.harm.Tick(deltaTime)
-	m.lfo.Tick(deltaTime)
-	m.trig.Tick(deltaTime)
-	m.skip.Tick(deltaTime)
-	m.env.Tick(deltaTime)
-	m.mod.Tick(deltaTime)
-	m.rnd.Tick(deltaTime)
+	m.ModClock.Tick(deltaTime)
+	m.ModArp.Tick(deltaTime)
+	m.ModLFO.Tick(deltaTime)
+	m.ModTrig.Tick(deltaTime)
+	m.ModSkip.Tick(deltaTime)
+	m.ModEnv.Tick(deltaTime)
+	m.ModMod.Tick(deltaTime)
+	m.ModRnd.Tick(deltaTime)
 }
 
 func (m *UnfoldableSpace) trigClock(high bool) {
 	if m.onClock != nil {
 		m.onClock(high)
 	}
-	m.trig.Clock(high)
+	m.ModTrig.Clock(high)
 }
 
 func (m *UnfoldableSpace) trigOuputGate1(high bool) {
 	if m.onTrigOutputGate1 != nil {
 		m.onTrigOutputGate1(high)
 	}
-	m.skip.Gate(0, high)
+	m.ModSkip.Gate(0, high)
 }
 
 func (m *UnfoldableSpace) skipSetCV1(cv units.CV) {
 	if m.onSkipSetCV1 != nil {
 		m.onSkipSetCV1(cv)
 	}
-	m.skip.SetCV(0, cv)
+	m.ModSkip.SetCV(0, cv)
 }
 
 func (m *UnfoldableSpace) skipOutputGate1(high bool) {
 	if m.onSkipOutputGate1 != nil {
 		m.onSkipOutputGate1(high)
 	}
-	m.env.Gate(0, high)
-	m.env.Gate(1, high)
-	m.harm.ArpClock(high)
+	m.ModEnv.Gate(0, high)
+	m.ModEnv.Gate(1, high)
+	m.ModArp.ArpClock(high)
 }
 
 func (m *UnfoldableSpace) lfoOutput5(cv units.CV) {
 	if m.onLFOOutput5 != nil {
 		m.onLFOOutput5(cv)
 	}
-	m.env.SetCV(0, cv)
+	m.ModEnv.SetCV(0, cv)
 }

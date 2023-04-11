@@ -1,16 +1,27 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/screenbank"
 	"github.com/heucuva/europi/internal/projects/clockgenerator/module"
-	europim "github.com/heucuva/europi/math"
+	"github.com/heucuva/europi/internal/projects/clockgenerator/screen"
 )
 
 var (
-	clock module.ClockGenerator
+	clock      module.ClockGenerator
+	ui         *screenbank.ScreenBank
+	screenMain = screen.Main{
+		Clock: &clock,
+	}
+	screenSettings = screen.Settings{
+		Clock:           &clock,
+		MinBPM:          0.01,
+		MaxBPM:          240.0,
+		MinGateDuration: time.Millisecond * 1,
+		MaxGateDuration: time.Millisecond * 990,
+	}
 )
 
 func startLoop(e *europi.EuroPi) {
@@ -23,40 +34,27 @@ func startLoop(e *europi.EuroPi) {
 			} else {
 				e.CV1.Off()
 			}
+			europi.ForceRepaintUI(e)
 		},
 	}); err != nil {
 		panic(err)
 	}
 }
 
-var (
-	displayDelay time.Duration
-)
-
-const (
-	displayRate       = time.Millisecond * 150
-	line1y      int16 = 11
-	line2y      int16 = 23
-)
-
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	cv := e.K1.ReadCV()
-	clock.SetBPM(europim.Lerp[float32](cv.ToFloat32(), 0.01, 240.0))
 	clock.Tick(deltaTime)
-
-	displayDelay += deltaTime
-	if displayDelay > displayRate {
-		displayDelay %= displayRate
-
-		disp := e.Display
-		disp.ClearBuffer()
-		disp.WriteLine(fmt.Sprintf("BPM:%3.1f", clock.BPM()), 0, line1y)
-		disp.WriteLine(fmt.Sprintf("1:%2.1f", e.CV1.Voltage()), 0, line2y)
-		disp.Display()
-	}
 }
 
 func main() {
+	var err error
+	ui, err = screenbank.NewScreenBank(
+		screenbank.WithScreen("main", &screenMain),
+		screenbank.WithScreen("settings", &screenSettings),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// some options shown below are being explicitly set to their defaults
 	// only to showcase their existence.
 	europi.Bootstrap(
@@ -65,5 +63,7 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
+		europi.UI(ui),
+		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

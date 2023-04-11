@@ -2,7 +2,8 @@ package knobbank
 
 import (
 	"github.com/heucuva/europi/input"
-	"github.com/heucuva/europi/math"
+	europim "github.com/heucuva/europi/math"
+	"github.com/heucuva/europi/units"
 )
 
 type KnobBank struct {
@@ -54,6 +55,17 @@ func (kb *KnobBank) ReadVoltage() float32 {
 	return cur.Value()
 }
 
+func (kb *KnobBank) ReadCV() units.CV {
+	// we can't use kb.Percent() here, because we might get over 5.0 volts input
+	// just clamp it
+	v := kb.ReadVoltage()
+	return units.CV(europim.Clamp(v/5.0, 0.0, 1.0))
+}
+
+func (kb *KnobBank) ReadVOct() units.VOct {
+	return units.VOct(kb.ReadVoltage())
+}
+
 func (kb *KnobBank) Percent() float32 {
 	percent := kb.knob.Percent()
 	if len(kb.bank) == 0 {
@@ -79,8 +91,8 @@ func (kb *KnobBank) Choice(numItems int) int {
 	value := kb.knob.ReadVoltage()
 	percent := kb.knob.Percent()
 	kb.lastValue = cur.update(percent, value, kb.lastValue)
-	idx := math.Lerp(cur.Percent(), 0, 2*numItems+1) / 2
-	return math.Clamp(idx, 0, numItems-1)
+	idx := europim.Lerp(cur.Percent(), 0, 2*numItems+1) / 2
+	return europim.Clamp(idx, 0, numItems-1)
 }
 
 func (kb *KnobBank) Next() {
@@ -130,11 +142,11 @@ func (e *knobBankEntry) unlock() {
 }
 
 func (e *knobBankEntry) Percent() float32 {
-	return math.Lerp[float32](e.percent*e.scale, 0, 1)
+	return europim.Lerp[float32](e.percent*e.scale, 0, 1)
 }
 
 func (e *knobBankEntry) Value() float32 {
-	return math.Clamp(e.value*e.scale, e.minVoltage, e.maxVoltage)
+	return europim.Clamp(e.value*e.scale, e.minVoltage, e.maxVoltage)
 }
 
 func (e *knobBankEntry) update(percent, value, lastValue float32) float32 {
@@ -142,7 +154,7 @@ func (e *knobBankEntry) update(percent, value, lastValue float32) float32 {
 		return lastValue
 	}
 
-	if math.Abs(value-lastValue) < 0.05 {
+	if europim.Abs(value-lastValue) < 0.05 {
 		return lastValue
 	}
 

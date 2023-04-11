@@ -95,6 +95,11 @@ func bootstrapInitializeComponents(config *bootstrapConfig, e *EuroPi) {
 		initRandom(e)
 	}
 
+	// ui initializaiton is always last
+	if config.ui != nil {
+		enableUI(e, config.ui, config.uiRefreshRate)
+	}
+
 	if config.onPostInitializeComponentsFn != nil {
 		config.onPostInitializeComponentsFn(e)
 	}
@@ -104,6 +109,10 @@ func bootstrapRunLoop(config *bootstrapConfig, e *EuroPi) {
 	if config.onStartLoopFn != nil {
 		config.onStartLoopFn(e)
 	}
+
+	startUI(e)
+
+	ForceRepaintUI(e)
 
 	if config.mainLoopInterval > 0 {
 		bootstrapRunLoopWithDelay(config, e)
@@ -154,6 +163,8 @@ func bootstrapDestroy(config *bootstrapConfig, e *EuroPi) {
 	if config.onBeginDestroyFn != nil {
 		config.onBeginDestroyFn(e)
 	}
+
+	disableUI(e)
 
 	disableDisplayLogger(e)
 

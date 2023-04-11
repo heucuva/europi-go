@@ -2,6 +2,7 @@ package input
 
 import (
 	"machine"
+	"runtime/interrupt"
 
 	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
@@ -72,8 +73,10 @@ func (a *Analog) Choice(numItems int) int {
 
 func (a *Analog) read() uint16 {
 	var sum int
+	state := interrupt.Disable()
 	for i := 0; i < int(a.samples); i++ {
 		sum += europim.Clamp(int(a.Get())-CalibratedMinAI, 0, CalibratedMaxAI)
 	}
+	interrupt.Restore(state)
 	return uint16(sum / int(a.samples))
 }
