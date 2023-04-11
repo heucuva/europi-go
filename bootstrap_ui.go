@@ -1,11 +1,8 @@
 package europi
 
 import (
-	"context"
 	"machine"
 	"time"
-
-	"github.com/heucuva/europi/input"
 )
 
 type UserInterface interface {
@@ -27,12 +24,6 @@ type UserInterfaceButton2 interface {
 
 type UserInterfaceButton2Long interface {
 	Button2Long(e *EuroPi, p machine.Pin)
-}
-
-type uiModule struct {
-	screen  UserInterface
-	repaint chan struct{}
-	stop    context.CancelFunc
 }
 
 var (
@@ -71,6 +62,7 @@ func enableUI(e *EuroPi, screen UserInterface, interval time.Duration) {
 	}
 	ui.setupButton(e, e.B2, inputB2, inputB2L)
 
+	ui.wg.Add(1)
 	go ui.run(e, interval)
 }
 
@@ -97,60 +89,6 @@ func disableUI(e *EuroPi) {
 	if ui.repaint != nil {
 		close(ui.repaint)
 	}
-}
 
-func (u *uiModule) run(e *EuroPi, interval time.Duration) {
-	ctx, cancel := context.WithCancel(context.Background())
-	ui.stop = cancel
-	defer ui.stop()
-
-	t := time.NewTicker(interval)
-	defer t.Stop()
-
-	lastTime := time.Now()
-	for {
-		select {
-		case <-ctx.Done():
-			return
-
-		case <-ui.repaint:
-			now := time.Now()
-			deltaTime := now.Sub(lastTime)
-			lastTime = now
-			u.screen.Paint(e, deltaTime)
-
-		case now := <-t.C:
-			deltaTime := now.Sub(lastTime)
-			lastTime = now
-			u.screen.Paint(e, deltaTime)
-		}
-	}
-}
-
-func (u *uiModule) setupButton(e *EuroPi, r input.DigitalReader, onShort, onLong func(e *EuroPi, p machine.Pin)) {
-	if onShort == nil && onLong == nil {
-		return
-	}
-
-	if onShort == nil {
-		// no-op
-		onShort = func(e *EuroPi, p machine.Pin) {}
-	}
-
-	// if no long-press handler present, just reuse short-press handler
-	if onLong == nil {
-		onLong = onShort
-	}
-
-	const longDuration = time.Second
-
-	r.HandlerEx(machine.PinFalling, func(p machine.Pin) {
-		startDown := r.LastInput()
-		deltaTime := time.Now().Sub(startDown)
-		if deltaTime < longDuration {
-			onShort(e, p)
-		} else {
-			onLong(e, p)
-		}
-	})
+	ui.wait()
 }

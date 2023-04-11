@@ -43,17 +43,21 @@ func Bootstrap(options ...BootstrapOption) error {
 	Pi = e
 	piWantDestroyChan = make(chan struct{}, 1)
 
-	panicHandler := config.panicHandler
-	defer func() {
-		if err := recover(); err != nil && panicHandler != nil {
-			panicHandler(e, err)
-		}
-	}()
-
 	var onceBootstrapDestroy sync.Once
+	panicHandler := config.panicHandler
+	lastDestroyFunc := config.onBeginDestroyFn
 	runBootstrapDestroy := func() {
+		reason := recover()
+		if reason != nil && panicHandler != nil {
+			config.onBeginDestroyFn = func(e *EuroPi, reason any) {
+				if lastDestroyFunc != nil {
+					lastDestroyFunc(e, reason)
+				}
+				panicHandler(e, reason)
+			}
+		}
 		onceBootstrapDestroy.Do(func() {
-			bootstrapDestroy(&config, e)
+			bootstrapDestroy(&config, e, reason)
 		})
 	}
 	defer runBootstrapDestroy()
@@ -159,9 +163,9 @@ mainLoop:
 	}
 }
 
-func bootstrapDestroy(config *bootstrapConfig, e *EuroPi) {
+func bootstrapDestroy(config *bootstrapConfig, e *EuroPi, reason any) {
 	if config.onBeginDestroyFn != nil {
-		config.onBeginDestroyFn(e)
+		config.onBeginDestroyFn(e, reason)
 	}
 
 	disableUI(e)
@@ -169,6 +173,11 @@ func bootstrapDestroy(config *bootstrapConfig, e *EuroPi) {
 	disableDisplayLogger(e)
 
 	uninitRandom(e)
+
+	if e != nil && e.Display != nil {
+		// show the last buffer
+		e.Display.Display()
+	}
 
 	close(piWantDestroyChan)
 	Pi = nil

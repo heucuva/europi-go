@@ -8,58 +8,68 @@ import (
 
 // Button is a struct for handling push button behavior.
 type Button struct {
-	Pin           machine.Pin
-	debounceDelay time.Duration
-	lastInput     time.Time
-	callback      func(p machine.Pin)
+	Pin        machine.Pin
+	lastChange time.Time
 }
 
 // NewButton creates a new Button struct.
 func NewButton(pin machine.Pin) *Button {
 	pin.Configure(machine.PinConfig{Mode: machine.PinInputPulldown})
 	return &Button{
-		Pin:           pin,
-		lastInput:     time.Now(),
-		debounceDelay: DefaultDebounceDelay,
+		Pin:        pin,
+		lastChange: time.Now(),
 	}
 }
 
 // Handler sets the callback function to be call when the button is pressed.
 func (b *Button) Handler(handler func(p machine.Pin)) {
-	b.HandlerExWithDebounce(machine.PinRising, handler, 0)
+	if handler == nil {
+		panic("cannot set nil handler")
+	}
+	b.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
+		if b.Value() {
+			handler(p)
+		}
+	})
 }
 
 // HandlerEx sets the callback function to be call when the button changes in a specified way.
 func (b *Button) HandlerEx(pinChange machine.PinChange, handler func(p machine.Pin)) {
-	b.HandlerExWithDebounce(pinChange, handler, 0)
+	if handler == nil {
+		panic("cannot set nil handler")
+	}
+	b.setHandler(pinChange, handler)
 }
 
 // HandlerWithDebounce sets the callback function to be call when the button is pressed and debounce delay time has elapsed.
 func (b *Button) HandlerWithDebounce(handler func(p machine.Pin), delay time.Duration) {
-	b.HandlerExWithDebounce(machine.PinRising, handler, delay)
+	if handler == nil {
+		panic("cannot set nil handler")
+	}
+	lastInput := time.Now()
+	b.Handler(func(p machine.Pin) {
+		now := time.Now()
+		if now.Before(lastInput.Add(delay)) {
+			return
+		}
+		handler(p)
+		lastInput = now
+	})
 }
 
-// HandlerExWithDebounce sets the callback function to be call when the button changes in a specified way and the debounce delay time has elapsed.
-func (b *Button) HandlerExWithDebounce(pinChange machine.PinChange, handler func(p machine.Pin), delay time.Duration) {
-	b.callback = handler
-	b.debounceDelay = delay
+func (b *Button) setHandler(pinChange machine.PinChange, handler func(p machine.Pin)) {
 	state := interrupt.Disable()
-	b.Pin.SetInterrupt(pinChange, b.debounceWrapper)
+	b.Pin.SetInterrupt(pinChange, func(p machine.Pin) {
+		now := time.Now()
+		handler(p)
+		b.lastChange = now
+	})
 	interrupt.Restore(state)
 }
 
-func (b *Button) debounceWrapper(p machine.Pin) {
-	t := time.Now()
-	if t.Before(b.lastInput.Add(b.debounceDelay)) {
-		return
-	}
-	b.callback(p)
-	b.lastInput = t
-}
-
-// LastInput return the time of the last button press.
-func (b *Button) LastInput() time.Time {
-	return b.lastInput
+// LastChange return the time of the last button input change.
+func (b *Button) LastChange() time.Time {
+	return b.lastChange
 }
 
 // Value returns true if button is currently pressed, else false.

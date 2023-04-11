@@ -10,7 +10,6 @@ type DigitalReader interface {
 	Handler(func(machine.Pin))
 	HandlerEx(machine.PinChange, func(machine.Pin))
 	HandlerWithDebounce(func(machine.Pin), time.Duration)
-	HandlerExWithDebounce(machine.PinChange, func(machine.Pin), time.Duration)
-	LastInput() time.Time
+	LastChange() time.Time
 	Value() bool
 }

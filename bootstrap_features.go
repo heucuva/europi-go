@@ -9,15 +9,32 @@ import (
 	"github.com/heucuva/europi/experimental/displaylogger"
 )
 
+var (
+	dispLog *displaylogger.Logger
+)
+
 func enableDisplayLogger(e *EuroPi) {
+	if dispLog != nil {
+		// already enabled - can happen when panicking
+		return
+	}
+
 	log.SetFlags(0)
-	log.SetOutput(&displaylogger.Logger{
+	dispLog = &displaylogger.Logger{
 		Display: e.Display,
-	})
+	}
+	log.SetOutput(dispLog)
 }
 
 func disableDisplayLogger(e *EuroPi) {
+	dispLog = nil
 	log.SetOutput(os.Stdout)
+}
+
+func flushDisplayLogger(e *EuroPi) {
+	if dispLog != nil {
+		dispLog.Flush()
+	}
 }
 
 func initRandom(e *EuroPi) {
