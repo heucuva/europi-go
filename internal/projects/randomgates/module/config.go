@@ -1,11 +1,8 @@
 package module
 
-import (
-	"time"
-)
-
 type Config struct {
-	Gate     [1]func(high bool)
-	Chance   float32
-	Duration time.Duration
+	Trigger         [3]func(high bool)
+	Gate            [3]func(high bool)
+	Mode            Mode
+	GatePersistence bool
 }

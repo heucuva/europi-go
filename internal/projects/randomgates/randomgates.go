@@ -1,35 +1,62 @@
 package main
 
 import (
-	"fmt"
 	"machine"
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/screenbank"
 	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
+	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
 	"github.com/heucuva/europi/internal/projects/randomgates/module"
-	europim "github.com/heucuva/europi/math"
+	"github.com/heucuva/europi/internal/projects/randomgates/screen"
 	"github.com/heucuva/europi/output"
 )
 
 var (
 	trig  module.RandomGates
 	clock clockgenerator.ClockGenerator
+
+	ui         *screenbank.ScreenBank
+	screenMain = screen.Main{
+		RandomGates: &trig,
+		Clock:       &clock,
+	}
+	screenClock = clockScreen.Settings{
+		Clock:           &clock,
+		MinBPM:          0.01,
+		MaxBPM:          240.0,
+		MinGateDuration: time.Millisecond * 1,
+		MaxGateDuration: time.Millisecond * 990,
+	}
+	screenSettings = screen.Settings{
+		RandomGates: &trig,
+	}
 )
+
+func makeGate(out output.Output) func(high bool) {
+	return func(high bool) {
+		if high {
+			out.On()
+		} else {
+			out.Off()
+		}
+	}
+}
 
 func startLoop(e *europi.EuroPi) {
 	if err := trig.Init(module.Config{
-		Gate: [1]func(high bool){
-			func(high bool) { // Gate 1
-				if high {
-					e.CV1.On()
-				} else {
-					e.CV1.Off()
-				}
-			},
+		Trigger: [3]func(high bool){
+			makeGate(e.CV1), // Trigger 1
+			makeGate(e.CV2), // Trigger 2
+			makeGate(e.CV3), // Trigger 3
 		},
-		Chance:   0.333333,
-		Duration: time.Millisecond * 200,
+		Gate: [3]func(high bool){
+			makeGate(e.CV4), // Gate 1
+			makeGate(e.CV5), // Gate 2
+			makeGate(e.CV6), // Gate 3
+		},
+		Mode: module.Mode200msTrig,
 	}); err != nil {
 		panic(err)
 	}
@@ -62,29 +89,21 @@ const (
 )
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	trig.SetChance(e.K1.ReadCV().ToFloat32())
-	cv := e.K2.ReadCV()
-	clock.SetBPM(europim.Lerp[float32](cv.ToFloat32(), 0.01, 240.0))
 	clock.Tick(deltaTime)
 	trig.Tick(deltaTime)
-
-	displayDelay += deltaTime
-	if displayDelay > displayRate {
-		displayDelay %= displayRate
-
-		disp := e.Display
-		disp.ClearBuffer()
-		if clock.Enabled() {
-			disp.DrawHLine(0, 0, 7, output.White)
-			disp.WriteLine(fmt.Sprintf("BPM:%3.1f", clock.BPM()), 64, line1y)
-		}
-		disp.WriteLine(fmt.Sprintf("Chn:%3.1f%%", trig.Chance()*100.0), 0, line1y)
-		disp.WriteLine(fmt.Sprintf("1:%2.1f", e.CV1.Voltage()), 0, line2y)
-		disp.Display()
-	}
 }
 
 func main() {
+	var err error
+	ui, err = screenbank.NewScreenBank(
+		screenbank.WithScreen("main", "\u2b50", &screenMain),
+		screenbank.WithScreen("settings", "\u2611", &screenSettings),
+		screenbank.WithScreen("clock", "\u23f0", &screenClock),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// some options shown below are being explicitly set to their defaults
 	// only to showcase their existence.
 	europi.Bootstrap(
@@ -93,5 +112,7 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
+		europi.UI(ui),
+		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

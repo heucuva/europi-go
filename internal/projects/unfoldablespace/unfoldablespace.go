@@ -7,6 +7,7 @@ import (
 	"github.com/heucuva/europi"
 	"github.com/heucuva/europi/experimental/screenbank"
 	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
+	gatesScreen "github.com/heucuva/europi/internal/projects/randomgates/screen"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/screen"
 	"github.com/heucuva/europi/units"
@@ -24,6 +25,9 @@ var (
 		MaxBPM:          240.0,
 		MinGateDuration: time.Millisecond * 1,
 		MaxGateDuration: time.Millisecond * 990,
+	}
+	screenTrig = gatesScreen.Settings{
+		RandomGates: &unfold.ModTrig,
 	}
 )
 
@@ -82,6 +86,7 @@ func main() {
 	ui, err = screenbank.NewScreenBank(
 		screenbank.WithScreen("main", "\u2b50", &screenMain),
 		screenbank.WithScreen("clock", "\u23f0", &screenClock),
+		screenbank.WithScreen("trig", "\u303d", &screenTrig),
 	)
 	if err != nil {
 		panic(err)

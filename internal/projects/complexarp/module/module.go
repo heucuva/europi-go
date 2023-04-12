@@ -3,6 +3,7 @@ package module
 import (
 	"time"
 
+	"github.com/heucuva/europi/experimental/quantizer"
 	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
@@ -13,7 +14,7 @@ type ComplexArp struct {
 	patPitch units.VOct
 
 	scale      scale
-	quantizer  quantizer[units.VOct]
+	quantizer  quantizer.Quantizer[units.VOct]
 	arpPattern pattern
 }
 

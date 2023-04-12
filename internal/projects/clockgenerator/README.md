@@ -26,7 +26,7 @@ The main display shows the voltages of the CV1 output on the EuroPi as well as t
 
 While Clock Generator is operating, you can toggle its activation mode (default mode at startup is `on`) by pressing Button 1 on the EuroPi while on the main screen. When the clock is active, you will be informed by seeing a small bar ( `_` ) in the upper-left corner of the display.
 
-### Performance Clock Configuration
+#### Performance Clock Configuration
 
 By default, the settings of the Performance Clock are:
 - Clock Rate: 120.0 BPM

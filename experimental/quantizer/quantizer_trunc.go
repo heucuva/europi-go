@@ -1,4 +1,4 @@
-package module
+package quantizer
 
 import (
 	"math"
@@ -6,9 +6,9 @@ import (
 	europim "github.com/heucuva/europi/math"
 )
 
-type quantizerTrunc[T any] struct{}
+type Trunc[T any] struct{}
 
-func (quantizerTrunc[T]) QuantizeToIndex(in float32, length int) int {
+func (Trunc[T]) QuantizeToIndex(in float32, length int) int {
 	if length == 0 {
 		return -1
 	}
@@ -18,7 +18,7 @@ func (quantizerTrunc[T]) QuantizeToIndex(in float32, length int) int {
 	return idx
 }
 
-func (q quantizerTrunc[T]) QuantizeToValue(in float32, list []T) T {
+func (q Trunc[T]) QuantizeToValue(in float32, list []T) T {
 	idx := q.QuantizeToIndex(in, len(list))
 	if idx == -1 {
 		var empty T

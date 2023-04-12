@@ -3,6 +3,7 @@ package module
 import (
 	"time"
 
+	"github.com/heucuva/europi/experimental/quantizer"
 	cascadelfo "github.com/heucuva/europi/internal/projects/cascadelfo/module"
 	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
 	complexarp "github.com/heucuva/europi/internal/projects/complexarp/module"
@@ -47,11 +48,10 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	}
 
 	if err := m.ModTrig.Init(randomgates.Config{
-		Gate: [1]func(high bool){
+		Trigger: [3]func(high bool){
 			m.trigOuputGate1, // Gate 1
 		},
-		Chance:   0.333333,
-		Duration: time.Millisecond * 200,
+		Mode: randomgates.Mode200msTrig,
 	}); err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		ArpOut:     config.SetVOct,
 		ArpPattern: complexarp.PatternBrownian,
 		Scale:      complexarp.ScaleC_Major,
-		Quantizer:  complexarp.QuantizerRound,
+		Quantizer:  quantizer.ModeRound,
 		ArpRange:   1.0,
 		ArpPitch:   4.0,
 	}); err != nil {

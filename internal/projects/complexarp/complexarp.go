@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/quantizer"
 	"github.com/heucuva/europi/internal/projects/complexarp/module"
 )
 
@@ -18,7 +19,7 @@ func startLoop(e *europi.EuroPi) {
 		ArpOut:     e.CV1.SetVOct,
 		ArpPattern: module.PatternBrownian,
 		Scale:      module.ScaleC_Major,
-		Quantizer:  module.QuantizerRound,
+		Quantizer:  quantizer.ModeRound,
 		ArpRange:   1.0,
 		ArpPitch:   4.0,
 	}); err != nil {
