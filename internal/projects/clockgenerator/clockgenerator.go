@@ -48,8 +48,8 @@ func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 func main() {
 	var err error
 	ui, err = screenbank.NewScreenBank(
-		screenbank.WithScreen("main", &screenMain),
-		screenbank.WithScreen("settings", &screenSettings),
+		screenbank.WithScreen("main", "\u2b50", &screenMain),
+		screenbank.WithScreen("settings", "\u2611", &screenSettings),
 	)
 	if err != nil {
 		panic(err)

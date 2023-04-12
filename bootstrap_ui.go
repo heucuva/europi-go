@@ -10,6 +10,10 @@ type UserInterface interface {
 	Paint(e *EuroPi, deltaTime time.Duration)
 }
 
+type UserInterfaceLogoPainter interface {
+	PaintLogo(e *EuroPi, deltaTime time.Duration)
+}
+
 type UserInterfaceButton1 interface {
 	Button1(e *EuroPi, p machine.Pin)
 }
@@ -35,6 +39,8 @@ func enableUI(e *EuroPi, screen UserInterface, interval time.Duration) {
 	if ui.screen == nil {
 		return
 	}
+
+	ui.logoPainter, _ = screen.(UserInterfaceLogoPainter)
 
 	ui.repaint = make(chan struct{}, 1)
 

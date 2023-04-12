@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/output"
 )
 
 type ScreenBank struct {
@@ -64,6 +65,15 @@ func (sb *ScreenBank) Start(e *europi.EuroPi) {
 		s.lastUpdate = time.Now()
 		s.unlock()
 	}
+}
+
+func (sb *ScreenBank) PaintLogo(e *europi.EuroPi, deltaTime time.Duration) {
+	cur := &sb.bank[sb.current]
+	cur.lock()
+	if cur.logo != "" {
+		e.Display.WriteEmojiLineInverseAligned(cur.logo, 0, 16, output.AlignRight, output.AlignMiddle)
+	}
+	cur.unlock()
 }
 
 func (sb *ScreenBank) Paint(e *europi.EuroPi, deltaTime time.Duration) {

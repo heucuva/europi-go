@@ -28,10 +28,8 @@ func (m *Main) Button1(e *europi.EuroPi, p machine.Pin) {
 
 func (m *Main) Paint(e *europi.EuroPi, deltaTime time.Duration) {
 	disp := e.Display
-	disp.ClearBuffer()
 	if m.Clock.Enabled() {
 		disp.DrawHLine(0, 0, 7, output.White)
 	}
 	disp.WriteLine(fmt.Sprintf("1:%2.1f", e.CV1.Voltage()), 0, line1y)
-	disp.Display()
 }

@@ -10,10 +10,11 @@ import (
 )
 
 type uiModule struct {
-	screen  UserInterface
-	repaint chan struct{}
-	stop    context.CancelFunc
-	wg      sync.WaitGroup
+	screen      UserInterface
+	logoPainter UserInterfaceLogoPainter
+	repaint     chan struct{}
+	stop        context.CancelFunc
+	wg          sync.WaitGroup
 }
 
 func (u *uiModule) wait() {
@@ -30,22 +31,30 @@ func (u *uiModule) run(e *EuroPi, interval time.Duration) {
 	t := time.NewTicker(interval)
 	defer t.Stop()
 
+	disp := e.Display
 	lastTime := time.Now()
+
+	paint := func(now time.Time) {
+		deltaTime := now.Sub(lastTime)
+		lastTime = now
+		disp.ClearBuffer()
+		if u.logoPainter != nil {
+			u.logoPainter.PaintLogo(e, deltaTime)
+		}
+		u.screen.Paint(e, deltaTime)
+		disp.Display()
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
 			return
 
 		case <-ui.repaint:
-			now := time.Now()
-			deltaTime := now.Sub(lastTime)
-			lastTime = now
-			u.screen.Paint(e, deltaTime)
+			paint(time.Now())
 
 		case now := <-t.C:
-			deltaTime := now.Sub(lastTime)
-			lastTime = now
-			u.screen.Paint(e, deltaTime)
+			paint(now)
 		}
 	}
 }

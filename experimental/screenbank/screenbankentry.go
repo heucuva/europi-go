@@ -8,6 +8,7 @@ import (
 
 type screenBankEntry struct {
 	name       string
+	logo       string
 	screen     europi.UserInterface
 	enabled    bool
 	locked     bool

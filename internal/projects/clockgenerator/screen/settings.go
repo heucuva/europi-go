@@ -44,7 +44,6 @@ func (m *Settings) Paint(e *europi.EuroPi, deltaTime time.Duration) {
 	m.updateMenu(e)
 
 	disp := e.Display
-	disp.ClearBuffer()
 
 	var (
 		bpmSel  rune = ' '
@@ -73,8 +72,6 @@ func (m *Settings) Paint(e *europi.EuroPi, deltaTime time.Duration) {
 		gateStr = fmt.Sprint(gate)
 	}
 	disp.WriteLine(fmt.Sprintf("%cGate:%s", gateSel, gateStr), 0, line2y)
-
-	disp.Display()
 }
 
 func (m *Settings) updateMenu(e *europi.EuroPi) {
