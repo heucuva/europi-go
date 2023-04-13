@@ -78,6 +78,7 @@ The order of the displays is:
 - Main display
 - Performance clock configuration
 - Random Gates configuration
+- Three-Phase LFO configuration
 
 #### Main Display
 
@@ -106,6 +107,14 @@ Modes are as follows:
 - 1:1: Triggers will last the same length of the input gate
 
 When on the Random Gates Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+#### Three-Phase LFO Configuration
+
+By default, the settings of Three-Phase LFO are:
+- Wave: sine
+- Rate: 20.0Hz
+
+When on the Three-Phase LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
 ## Internal *'Module'* Configuration
 
@@ -160,7 +169,7 @@ In order to simulate a complex configuration of modules and their interactions, 
 
 ### Random Gates
 
-- Gate Duration: 200ms
+- Mode: 200ms
 
 ### Three-Phase LFO
 

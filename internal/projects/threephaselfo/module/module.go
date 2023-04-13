@@ -38,7 +38,7 @@ func (m *ThreePhaseLFO) Init(config Config) error {
 	m.SetRate(config.Phi3Rate)
 
 	var err error
-	m.wave, err = m.getWaveMode(config.WaveMode)
+	m.wave, err = getWaveMode(config.WaveMode)
 	return err
 }
 
@@ -46,14 +46,22 @@ func (m *ThreePhaseLFO) SetRate(cv units.CV) {
 	m.interval = europim.Lerp(cv.ToFloat32(), 1, time.Second/4)
 }
 
+func (m *ThreePhaseLFO) Rate() units.CV {
+	return units.CV(europim.InverseLerp(m.interval, 1, time.Second/4))
+}
+
+func (m *ThreePhaseLFO) RateHz() float32 {
+	return float32(time.Second) / float32(m.interval)
+}
+
 func (m *ThreePhaseLFO) SetWaveCV(cv units.CV) {
-	mode := europim.Lerp(cv.ToFloat32(), WaveModeSine, cWaveModeCount-1)
+	mode := waveModeQuant.QuantizeToValue(cv.ToFloat32(), cvWaveModes)
 	if mode == m.wave.Mode() {
 		// no change
 		return
 	}
 
-	wave, err := m.getWaveMode(mode)
+	wave, err := getWaveMode(mode)
 	if err != nil {
 		panic(err)
 	}

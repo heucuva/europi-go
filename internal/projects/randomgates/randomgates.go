@@ -78,16 +78,6 @@ func startLoop(e *europi.EuroPi) {
 	}, time.Millisecond*500)
 }
 
-var (
-	displayDelay time.Duration
-)
-
-const (
-	displayRate       = time.Millisecond * 150
-	line1y      int16 = 11
-	line2y      int16 = 23
-)
-
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 	clock.Tick(deltaTime)
 	trig.Tick(deltaTime)

@@ -20,15 +20,25 @@ Currently, only Sine waves are generated.
 
 ## Using Three-Phase LFO
 
-### Three-Phase LFO
+### Changing Screens
 
-While Three-Phase LFO is operating, you can turn Knob 1 to change the base rate of the LFO.
+Long-pressing (>=650ms) Button 2 on the EuroPi will transition to the next display in the chain. If you transition past the last item in the display chain, then the display will cycle to the first item.
 
-Knob 2 can be turned to change the selected waveform. Currently, this does effectively nothing, as there is only 1 waveform provided (sine).
+The order of the displays is:
+- Main display
+- Three-Phase LFO configuration
 
-### TODO
+#### Main Display
 
-More functionality and menu-diving to come...
+The main display shows the voltages of the CV outputs on the EuroPi.
+
+#### Three-Phase LFO Configuration
+
+By default, the settings of Three-Phase LFO are:
+- Wave: sine
+- Rate: 20.0Hz
+
+When on the Three-Phase LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
 ## Special Thanks
 
