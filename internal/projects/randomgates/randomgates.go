@@ -72,10 +72,6 @@ func startLoop(e *europi.EuroPi) {
 	e.DI.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
 		trig.Clock(e.DI.Value())
 	})
-
-	e.B1.HandlerWithDebounce(func(p machine.Pin) {
-		clock.Toggle()
-	}, time.Millisecond*500)
 }
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {

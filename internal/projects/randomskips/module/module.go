@@ -8,8 +8,12 @@ import (
 )
 
 type RandomSkips struct {
-	gate   [1]gate
-	chance float32
+	out       func(high bool)
+	active    bool
+	lastInput bool
+	chance    float32
+	cv        float32
+	ac        float32 // attenuated chance (cv * chance)
 }
 
 func noop(_ bool) {
@@ -17,45 +21,34 @@ func noop(_ bool) {
 
 func (m *RandomSkips) Init(config Config) error {
 	m.chance = config.Chance
-	for i := range m.gate {
-		f := config.Gate[i]
-		if f == nil {
-			f = noop
-		}
-		m.gate[i].out = f
-		m.SetCV(i, 1)
+	f := config.Gate
+	if f == nil {
+		f = noop
 	}
+	m.out = f
+	m.SetCV(1)
 	return nil
 }
 
-func (m *RandomSkips) Gate(gate int, high bool) {
-	if gate < 0 || gate > len(m.gate) {
-		panic("gate: out of range")
-	}
-
-	g := &m.gate[gate]
-	prev := g.active
-	lastInput := g.lastInput
+func (m *RandomSkips) Gate(high bool) {
+	prev := m.active
+	lastInput := m.lastInput
 	next := prev
-	g.lastInput = high
+	m.lastInput = high
 
-	if high != lastInput && rand.Float32() < g.chance {
+	if high != lastInput && rand.Float32() < m.ac {
 		next = !prev
 	}
 
 	if prev != next {
-		g.active = next
-		g.out(next)
+		m.active = next
+		m.out(next)
 	}
 }
 
-func (m *RandomSkips) SetCV(gate int, cv units.CV) {
-	if gate < 0 || gate > len(m.gate) {
-		panic("gate: out of range")
-	}
-
-	g := &m.gate[gate]
-	g.chance = m.chance * cv.ToFloat32()
+func (m *RandomSkips) SetCV(cv units.CV) {
+	m.cv = cv.ToFloat32()
+	m.ac = m.chance * m.cv
 }
 
 func (m *RandomSkips) SetChance(chance float32) {

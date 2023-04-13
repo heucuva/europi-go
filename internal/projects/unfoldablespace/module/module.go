@@ -67,9 +67,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	}
 
 	if err := m.ModSkip.Init(randomskips.Config{
-		Gate: [1]func(high bool){
-			m.skipOutputGate1, // Gate1
-		},
+		Gate:   m.skipOutputGate1,
 		Chance: 0.6,
 	}); err != nil {
 		return err
@@ -185,14 +183,14 @@ func (m *UnfoldableSpace) trigOuputGate1(high bool) {
 	if m.onTrigOutputGate1 != nil {
 		m.onTrigOutputGate1(high)
 	}
-	m.ModSkip.Gate(0, high)
+	m.ModSkip.Gate(high)
 }
 
 func (m *UnfoldableSpace) skipSetCV1(cv units.CV) {
 	if m.onSkipSetCV1 != nil {
 		m.onSkipSetCV1(cv)
 	}
-	m.ModSkip.SetCV(0, cv)
+	m.ModSkip.SetCV(cv)
 }
 
 func (m *UnfoldableSpace) skipOutputGate1(high bool) {

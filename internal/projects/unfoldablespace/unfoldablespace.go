@@ -8,6 +8,7 @@ import (
 	"github.com/heucuva/europi/experimental/screenbank"
 	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
 	trigScreen "github.com/heucuva/europi/internal/projects/randomgates/screen"
+	skipScreen "github.com/heucuva/europi/internal/projects/randomskips/screen"
 	modScreen "github.com/heucuva/europi/internal/projects/threephaselfo/screen"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/module"
 	"github.com/heucuva/europi/internal/projects/unfoldablespace/screen"
@@ -32,6 +33,9 @@ var (
 	}
 	screenMod = modScreen.Settings{
 		LFO: &unfold.ModMod,
+	}
+	screenSkip = skipScreen.Settings{
+		RandomSkips: &unfold.ModSkip,
 	}
 )
 
@@ -92,6 +96,7 @@ func main() {
 		screenbank.WithScreen("clock", "\u23f0", &screenClock),
 		screenbank.WithScreen("trig", "\u303d", &screenTrig),
 		screenbank.WithScreen("mod", "\u27bf", &screenMod),
+		screenbank.WithScreen("skip", "\u2702", &screenSkip),
 	)
 	if err != nil {
 		panic(err)

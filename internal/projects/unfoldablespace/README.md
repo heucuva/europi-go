@@ -79,6 +79,7 @@ The order of the displays is:
 - Performance clock configuration
 - Random Gates configuration
 - Three-Phase LFO configuration
+- Random Skips configuration
 
 #### Main Display
 
@@ -115,6 +116,13 @@ By default, the settings of Three-Phase LFO are:
 - Rate: 20.0Hz
 
 When on the Three-Phase LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+#### Random Skips Configuration
+
+By default, the settings of Random Skips are:
+- Chance: 60.0%
+
+When on the Random Skips Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
 ## Internal *'Module'* Configuration
 
