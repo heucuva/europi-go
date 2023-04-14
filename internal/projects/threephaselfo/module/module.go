@@ -41,12 +41,12 @@ func (m *ThreePhaseLFO) Init(config Config) error {
 	return err
 }
 
-func (m *ThreePhaseLFO) SetRate(rateHz float32) {
-	m.interval = time.Duration(float32(time.Second) / rateHz)
+func (m *ThreePhaseLFO) SetRate(rate units.Hertz) {
+	m.interval = rate.ToPeriod()
 }
 
-func (m *ThreePhaseLFO) Rate() float32 {
-	return float32(time.Second) / float32(m.interval)
+func (m *ThreePhaseLFO) Rate() units.Hertz {
+	return units.Hertz(time.Second) / units.Hertz(m.interval)
 }
 
 func (m *ThreePhaseLFO) SetWave(mode WaveMode) {

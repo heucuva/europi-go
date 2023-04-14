@@ -58,7 +58,7 @@ type lfo struct {
 
 func (o *lfo) Update(delta float32) {
 	l := len(lfoTriangle)
-	newp := o.pos + delta
+	newp := o.pos + delta*float32(l)
 	p, f := math.Modf(float64(newp))
 	for int(p) >= l {
 		newp -= float32(l)

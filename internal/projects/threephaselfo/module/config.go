@@ -6,8 +6,8 @@ import (
 
 type Config struct {
 	WaveMode  WaveMode
-	Phi3Rate  float32
-	SkewRate  float32
+	Phi3Rate  units.Hertz
+	SkewRate  units.Hertz
 	SkewShape units.CV
 	Degree0   func(cv units.CV)
 	Degree120 func(cv units.CV)
