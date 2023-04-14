@@ -22,15 +22,25 @@ The scope of this app is to drive the CV 1 through CV 6 outputs as triangle wave
 
 ## Using Cascading LFO
 
-### Cascading LFOs
+### Changing Screens
 
-While Cascade LFO is operating, you can turn Knob 1 to change the base rate of the LFO chain.
+Long-pressing (>=650ms) Button 2 on the EuroPi will transition to the next display in the chain. If you transition past the last item in the display chain, then the display will cycle to the first item.
 
-Knob 2 can be turned to change the attenuversion of the modifications to the rate made by the Analogue Input. This range is -1.0 to 1.0.
+The order of the displays is:
+- Main display
+- Cascading LFO configuration
 
-### TODO
+#### Main Display
 
-More functionality and menu-diving to come...
+The main display shows the voltages of the CV outputs on the EuroPi.
+
+#### Cascading LFO Configuration
+
+By default, the settings of Cascading LFO are:
+- Rate Attenuverter: +80%
+- Rate: 16.0Hz
+
+When on the Cascading LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
 ## Special Thanks
 

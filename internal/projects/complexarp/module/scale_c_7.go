@@ -14,10 +14,6 @@ func (scaleC7) Mode() Scale {
 	return ScaleC_7
 }
 
-func (scaleC7) Name() string {
-	return "C 7"
-}
-
 var (
 	cScaleC_7 = []units.VOct{keyC, keyE, keyG, keyBFlat}
 )

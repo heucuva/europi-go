@@ -36,7 +36,7 @@ The main display shows the voltages of the CV outputs on the EuroPi.
 
 By default, the settings of Three-Phase LFO are:
 - Wave: sine
-- Rate: 20.0Hz
+- Rate: 1.0Hz
 
 When on the Three-Phase LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 

@@ -14,10 +14,6 @@ func (scaleCDiminished) Mode() Scale {
 	return ScaleC_Diminished
 }
 
-func (scaleCDiminished) Name() string {
-	return "C dim"
-}
-
 var (
 	cScaleC_Diminished = []units.VOct{keyC, keyD, keyEFlat, keyF, keyGFlat, keyAFlat, keyA, keyB}
 )

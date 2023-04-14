@@ -6,25 +6,25 @@ import (
 
 	"github.com/heucuva/europi"
 	"github.com/heucuva/europi/experimental/knobmenu"
-	"github.com/heucuva/europi/internal/projects/threephaselfo/module"
+	"github.com/heucuva/europi/internal/projects/cascadelfo/module"
 	"github.com/heucuva/europi/units"
 )
 
 type Settings struct {
-	LFO *module.ThreePhaseLFO
 	km  *knobmenu.KnobMenu
+	LFO *module.CascadeLFO
 }
 
-func (m *Settings) waveString() string {
-	return module.WaveModeToString(m.LFO.Wave())
+func (m *Settings) rateAVString() string {
+	return module.RateAVToString(m.LFO.Attenuverter())
 }
 
-func (m *Settings) waveValue() units.CV {
-	return module.WaveModeToCV(m.LFO.Wave())
+func (m *Settings) rateAVValue() units.CV {
+	return module.RateAVToCV(m.LFO.Attenuverter())
 }
 
-func (m *Settings) setWaveValue(value units.CV) {
-	m.LFO.SetWave(module.CVToWaveMode(value))
+func (m *Settings) setRateAVValue(value units.CV) {
+	m.LFO.SetAttenuverter(module.CVToRateAV(value))
 }
 
 func (m *Settings) rateString() string {
@@ -41,7 +41,7 @@ func (m *Settings) setRateValue(value units.CV) {
 
 func (m *Settings) Start(e *europi.EuroPi) {
 	km, err := knobmenu.NewKnobMenu(e.K1,
-		knobmenu.WithItem("wave", "Wave", m.waveString, m.waveValue, m.setWaveValue),
+		knobmenu.WithItem("rateav", "R.AV", m.rateAVString, m.rateAVValue, m.setRateAVValue),
 		knobmenu.WithItem("rate", "Rate", m.rateString, m.rateValue, m.setRateValue),
 	)
 	if err != nil {

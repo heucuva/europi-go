@@ -24,8 +24,8 @@ var (
 func startLoop(e *europi.EuroPi) {
 	if err := lfo.Init(module.Config{
 		WaveMode:  module.WaveModeSine,
-		Phi3Rate:  0.2,
-		SkewRate:  0.0,
+		Phi3Rate:  1.0,
+		SkewRate:  20.0,
 		SkewShape: 0.05,
 		Degree0:   e.CV1.SetCV,
 		Degree120: e.CV2.SetCV,

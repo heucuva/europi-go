@@ -14,10 +14,6 @@ func (scaleCMajor) Mode() Scale {
 	return ScaleC_Major
 }
 
-func (scaleCMajor) Name() string {
-	return "C maj"
-}
-
 var (
 	cScaleC_Major = []units.VOct{keyC, keyD, keyE, keyF, keyG, keyA, keyB}
 )

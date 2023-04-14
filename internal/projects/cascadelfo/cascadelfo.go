@@ -5,13 +5,21 @@ import (
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/screenbank"
 	"github.com/heucuva/europi/internal/projects/cascadelfo/module"
 	"github.com/heucuva/europi/internal/projects/cascadelfo/screen"
 	"github.com/heucuva/europi/units"
 )
 
 var (
-	lfo module.CascadeLFO
+	lfo        module.CascadeLFO
+	ui         *screenbank.ScreenBank
+	screenMain = screen.Main{
+		LFO: &lfo,
+	}
+	screenSettings = screen.Settings{
+		LFO: &lfo,
+	}
 )
 
 func startLoop(e *europi.EuroPi) {
@@ -26,8 +34,8 @@ func startLoop(e *europi.EuroPi) {
 			nil,         // LFO 7
 			nil,         // LFO 8
 		},
-		Rate:             0.8,
-		RateAttenuverter: 0.9,
+		Rate:             16.0,
+		RateAttenuverter: module.CVToRateAV(0.9),
 	}); err != nil {
 		panic(err)
 	}
@@ -38,13 +46,20 @@ func startLoop(e *europi.EuroPi) {
 }
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	lfo.SetAttenuverter(e.K2.ReadCV())
-	lfo.SetRate(e.K1.ReadCV())
 	lfo.SetCV(e.AI.ReadCV())
 	lfo.Tick(deltaTime)
 }
 
 func main() {
+	var err error
+	ui, err = screenbank.NewScreenBank(
+		screenbank.WithScreen("main", "\u2b50", &screenMain),
+		screenbank.WithScreen("settings", "\u2611", &screenSettings),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// some options shown below are being explicitly set to their defaults
 	// only to showcase their existence.
 	europi.Bootstrap(
@@ -53,9 +68,7 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
-		europi.UI(&screen.Main{
-			LFO: &lfo,
-		}),
+		europi.UI(ui),
 		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

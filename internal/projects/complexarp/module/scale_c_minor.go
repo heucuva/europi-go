@@ -14,10 +14,6 @@ func (scaleCMinor) Mode() Scale {
 	return ScaleC_Minor
 }
 
-func (scaleCMinor) Name() string {
-	return "C min"
-}
-
 var (
 	cScaleC_Minor = []units.VOct{keyC, keyD, keyEFlat, keyF, keyG, keyAFlat, keyBFlat}
 )

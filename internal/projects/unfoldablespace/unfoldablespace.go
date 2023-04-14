@@ -6,7 +6,9 @@ import (
 
 	"github.com/heucuva/europi"
 	"github.com/heucuva/europi/experimental/screenbank"
+	lfoScreen "github.com/heucuva/europi/internal/projects/cascadelfo/screen"
 	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
+	arpScreen "github.com/heucuva/europi/internal/projects/complexarp/screen"
 	trigScreen "github.com/heucuva/europi/internal/projects/randomgates/screen"
 	skipScreen "github.com/heucuva/europi/internal/projects/randomskips/screen"
 	modScreen "github.com/heucuva/europi/internal/projects/threephaselfo/screen"
@@ -22,11 +24,7 @@ var (
 		Unfold: &unfold,
 	}
 	screenClock = clockScreen.Settings{
-		Clock:           &unfold.ModClock,
-		MinBPM:          0.01,
-		MaxBPM:          240.0,
-		MinGateDuration: time.Millisecond * 1,
-		MaxGateDuration: time.Millisecond * 990,
+		Clock: &unfold.ModClock,
 	}
 	screenTrig = trigScreen.Settings{
 		RandomGates: &unfold.ModTrig,
@@ -36,6 +34,12 @@ var (
 	}
 	screenSkip = skipScreen.Settings{
 		RandomSkips: &unfold.ModSkip,
+	}
+	screenArp = arpScreen.Settings{
+		ComplexArp: &unfold.ModArp,
+	}
+	screenLFO = lfoScreen.Settings{
+		LFO: &unfold.ModLFO,
 	}
 )
 
@@ -70,20 +74,11 @@ func startLoop(e *europi.EuroPi) {
 		panic(err)
 	}
 
-	e.DI.Handler(func(p machine.Pin) {
-		unfold.Clock()
+	e.DI.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
+		high := e.DI.Value()
+		unfold.Clock(high)
 	})
 }
-
-var (
-	displayDelay time.Duration
-)
-
-const (
-	displayRate       = time.Millisecond * 150
-	line1y      int16 = 11
-	line2y      int16 = 23
-)
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
 	unfold.Tick(deltaTime)
@@ -97,6 +92,8 @@ func main() {
 		screenbank.WithScreen("trig", "\u303d", &screenTrig),
 		screenbank.WithScreen("mod", "\u27bf", &screenMod),
 		screenbank.WithScreen("skip", "\u2702", &screenSkip),
+		screenbank.WithScreen("arp", "\u26bd", &screenArp),
+		screenbank.WithScreen("lfo", "\u2797", &screenLFO),
 	)
 	if err != nil {
 		panic(err)

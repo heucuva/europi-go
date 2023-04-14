@@ -85,9 +85,14 @@ func (sb *ScreenBank) Paint(e *europi.EuroPi, deltaTime time.Duration) {
 	cur.unlock()
 }
 
-func (sb *ScreenBank) Button1(e *europi.EuroPi, p machine.Pin) {
-	if cur, ok := sb.Current().(europi.UserInterfaceButton1); ok {
-		cur.Button1(e, p)
+func (sb *ScreenBank) Button1Ex(e *europi.EuroPi, p machine.Pin, high bool) {
+	screen := sb.Current()
+	if cur, ok := screen.(europi.UserInterfaceButton1); ok {
+		if !high {
+			cur.Button1(e, p)
+		}
+	} else if cur, ok := screen.(europi.UserInterfaceButton1Ex); ok {
+		cur.Button1Ex(e, p, high)
 	}
 }
 
@@ -96,13 +101,18 @@ func (sb *ScreenBank) Button1Long(e *europi.EuroPi, p machine.Pin) {
 		cur.Button1Long(e, p)
 	} else {
 		// try the short-press
-		sb.Button1(e, p)
+		sb.Button1Ex(e, p, false)
 	}
 }
 
-func (sb *ScreenBank) Button2(e *europi.EuroPi, p machine.Pin) {
-	if cur, ok := sb.Current().(europi.UserInterfaceButton2); ok {
-		cur.Button2(e, p)
+func (sb *ScreenBank) Button2Ex(e *europi.EuroPi, p machine.Pin, high bool) {
+	screen := sb.Current()
+	if cur, ok := screen.(europi.UserInterfaceButton2); ok {
+		if !high {
+			cur.Button2(e, p)
+		}
+	} else if cur, ok := screen.(europi.UserInterfaceButton2Ex); ok {
+		cur.Button2Ex(e, p, high)
 	}
 }
 

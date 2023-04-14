@@ -14,10 +14,6 @@ func (scaleCLydian) Mode() Scale {
 	return ScaleC_Lydian
 }
 
-func (scaleCLydian) Name() string {
-	return "C lyd"
-}
-
 var (
 	cScaleC_Lydian = []units.VOct{keyC, keyD, keyE, keyFSharp, keyG, keyA, keyB}
 )

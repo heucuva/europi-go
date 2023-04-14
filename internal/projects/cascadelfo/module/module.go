@@ -10,7 +10,7 @@ import (
 type CascadeLFO struct {
 	delta  float32
 	lfo    [8]lfo
-	rate   units.CV
+	rate   float32
 	rateAV float32
 }
 
@@ -32,24 +32,26 @@ func (m *CascadeLFO) Init(config Config) error {
 	return nil
 }
 
-const (
-	lfoConstA = 218.45333333333333333333333333248
-	lfoConstB = 5.23377884541046550578029111514
-)
-
 func (m *CascadeLFO) SetCV(cv units.CV) {
 	ai := cv.ToFloat32()*2.0 - 1.0
-	rate := m.rate.ToFloat32() + ai*m.rateAV
-	// best guess on calculating step rate of final lfo
-	m.delta = float32(lfoConstA * math.Exp(lfoConstB*float64(rate)))
+	rate := RateToCV(m.rate).ToFloat32() + ai*m.rateAV
+	m.delta = CVToRate(units.CV(rate)) * float32(len(lfoTriangle)) * (2.0 * math.Pi)
 }
 
-func (m *CascadeLFO) SetAttenuverter(cv units.CV) {
-	m.rateAV = cv.ToFloat32()*2.0 - 1.0
+func (m *CascadeLFO) SetAttenuverter(av float32) {
+	m.rateAV = av
 }
 
-func (m *CascadeLFO) SetRate(cv units.CV) {
-	m.rate = cv
+func (m *CascadeLFO) Attenuverter() float32 {
+	return m.rateAV
+}
+
+func (m *CascadeLFO) SetRate(rate float32) {
+	m.rate = rate
+}
+
+func (m *CascadeLFO) Rate() float32 {
+	return m.rate
 }
 
 func (m *CascadeLFO) Tick(deltaTime time.Duration) {

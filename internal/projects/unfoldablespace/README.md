@@ -80,6 +80,8 @@ The order of the displays is:
 - Random Gates configuration
 - Three-Phase LFO configuration
 - Random Skips configuration
+- Complex Arpeggiator configuration
+- Cascading LFO configuration
 
 #### Main Display
 
@@ -113,7 +115,7 @@ When on the Random Gates Configuration screen, pressing Button 1 on the EuroPi w
 
 By default, the settings of Three-Phase LFO are:
 - Wave: sine
-- Rate: 20.0Hz
+- Rate: about 0.0258 Hz (~ 25.8 milliHertz)
 
 When on the Three-Phase LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
@@ -123,6 +125,35 @@ By default, the settings of Random Skips are:
 - Chance: 60.0%
 
 When on the Random Skips Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+#### Complex Arpeggiator Configuration
+
+By default, the settings of Complex Arpeggiator are:
+- Scale: C Major
+- Pitch: 4.0 (C-4)
+- Range: 1.0 (+/- 1 Octave)
+
+Scales are as follows:
+- C Lydian
+- C Major
+- C 7
+- C Suspended
+- C Harmonic 5
+- C Dorian
+- C Minor
+- C Phrygian
+- C Diminished
+- C Augmented
+
+When on the Complex Arpeggiator Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+#### Cascading LFO Configuration
+
+By default, the settings of Cascading LFO are:
+- Rate Attenuverter: +80%
+- Rate: 39.4Hz
+
+When on the Cascading LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
 ## Internal *'Module'* Configuration
 
@@ -182,8 +213,8 @@ In order to simulate a complex configuration of modules and their interactions, 
 ### Three-Phase LFO
 
 - Wave Mode: Sine
-- 3-Phi Rate: 20%
-- Skew Rate: 0%
+- 3-Phi Rate: 25.8 mHz
+- Skew Rate: 0 Hz
 - Skew Shape: 5%
 
 ### Random Skips

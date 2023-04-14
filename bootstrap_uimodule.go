@@ -59,30 +59,37 @@ func (u *uiModule) run(e *EuroPi, interval time.Duration) {
 	}
 }
 
-func (u *uiModule) setupButton(e *EuroPi, r input.DigitalReader, onShort, onLong func(e *EuroPi, p machine.Pin)) {
+func (u *uiModule) setupButton(e *EuroPi, r input.DigitalReader, onShort func(e *EuroPi, p machine.Pin, high bool), onLong func(e *EuroPi, p machine.Pin)) {
 	if onShort == nil && onLong == nil {
 		return
 	}
 
 	if onShort == nil {
 		// no-op
-		onShort = func(e *EuroPi, p machine.Pin) {}
+		onShort = func(e *EuroPi, p machine.Pin, high bool) {}
 	}
 
 	// if no long-press handler present, just reuse short-press handler
 	if onLong == nil {
-		onLong = onShort
+		onLong = func(e *EuroPi, p machine.Pin) {
+			onShort(e, p, false)
+		}
 	}
 
 	const longDuration = time.Millisecond * 650
 
-	r.Handler(func(p machine.Pin) {
-		startDown := r.LastChange()
-		deltaTime := time.Now().Sub(startDown)
-		if deltaTime < longDuration {
-			onShort(e, p)
+	r.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
+		high := r.Value()
+		if !high {
+			onShort(e, p, high)
 		} else {
-			onLong(e, p)
+			startDown := r.LastChange()
+			deltaTime := time.Since(startDown)
+			if deltaTime < longDuration {
+				onShort(e, p, high)
+			} else {
+				onLong(e, p)
+			}
 		}
 	})
 }

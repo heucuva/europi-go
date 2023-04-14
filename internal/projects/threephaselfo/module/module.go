@@ -3,7 +3,6 @@ package module
 import (
 	"time"
 
-	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
 
@@ -42,20 +41,15 @@ func (m *ThreePhaseLFO) Init(config Config) error {
 	return err
 }
 
-func (m *ThreePhaseLFO) SetRate(cv units.CV) {
-	m.interval = europim.Lerp(cv.ToFloat32(), 1, time.Second/4)
+func (m *ThreePhaseLFO) SetRate(rateHz float32) {
+	m.interval = time.Duration(float32(time.Second) / rateHz)
 }
 
-func (m *ThreePhaseLFO) Rate() units.CV {
-	return units.CV(europim.InverseLerp(m.interval, 1, time.Second/4))
-}
-
-func (m *ThreePhaseLFO) RateHz() float32 {
+func (m *ThreePhaseLFO) Rate() float32 {
 	return float32(time.Second) / float32(m.interval)
 }
 
-func (m *ThreePhaseLFO) SetWaveCV(cv units.CV) {
-	mode := waveModeQuant.QuantizeToValue(cv.ToFloat32(), cvWaveModes)
+func (m *ThreePhaseLFO) SetWave(mode WaveMode) {
 	if mode == m.wave.Mode() {
 		// no change
 		return

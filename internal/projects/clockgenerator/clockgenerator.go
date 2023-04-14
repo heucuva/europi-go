@@ -16,11 +16,7 @@ var (
 		Clock: &clock,
 	}
 	screenSettings = screen.Settings{
-		Clock:           &clock,
-		MinBPM:          0.01,
-		MaxBPM:          240.0,
-		MinGateDuration: time.Millisecond * 1,
-		MaxGateDuration: time.Millisecond * 990,
+		Clock: &clock,
 	}
 )
 

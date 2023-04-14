@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/heucuva/europi/experimental/quantizer"
-	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
 
@@ -49,6 +48,10 @@ func (m *ComplexArp) SetArpPitch(voct units.VOct) {
 	m.patPitch = voct
 }
 
+func (m *ComplexArp) ArpPitch() units.VOct {
+	return m.patPitch
+}
+
 func (m *ComplexArp) SetArpRange(voct units.VOct) {
 	m.patRange = voct
 }
@@ -57,8 +60,7 @@ func (m *ComplexArp) ArpRange() units.VOct {
 	return m.patRange
 }
 
-func (m *ComplexArp) SetScaleCV(cv units.CV) {
-	mode := europim.Lerp(cv.ToFloat32(), ScaleC_Lydian, cScaleCount-1)
+func (m *ComplexArp) SetScale(mode Scale) {
 	if m.scale.Mode() == mode {
 		// no change
 		return
@@ -73,10 +75,6 @@ func (m *ComplexArp) SetScaleCV(cv units.CV) {
 
 func (m *ComplexArp) Scale() Scale {
 	return m.scale.Mode()
-}
-
-func (m *ComplexArp) ScaleName() string {
-	return m.scale.Name()
 }
 
 func (m *ComplexArp) Tick(deltaTime time.Duration) {

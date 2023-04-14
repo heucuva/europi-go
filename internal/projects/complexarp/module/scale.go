@@ -19,15 +19,11 @@ const (
 	ScaleC_Phrygian
 	ScaleC_Diminished
 	ScaleC_Augmented
-
-	//====
-	cScaleCount
 )
 
 type scale interface {
 	Keys() []units.VOct
 	Mode() Scale
-	Name() string
 }
 
 func (m *ComplexArp) setScale(mode Scale) error {

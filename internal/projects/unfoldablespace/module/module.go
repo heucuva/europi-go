@@ -58,8 +58,8 @@ func (m *UnfoldableSpace) Init(config Config) error {
 
 	if err := m.ModMod.Init(threephaselfo.Config{
 		WaveMode:  threephaselfo.WaveModeSine,
-		Phi3Rate:  0.2,
-		SkewRate:  0.0,
+		Phi3Rate:  threephaselfo.CVToRate(0.2),
+		SkewRate:  threephaselfo.CVToRate(0.0),
 		SkewShape: 0.05,
 		Degree0:   m.skipSetCV1,
 	}); err != nil {
@@ -95,8 +95,8 @@ func (m *UnfoldableSpace) Init(config Config) error {
 			nil,             // LFO 7
 			nil,             // LFO 8
 		},
-		Rate:             0.8,
-		RateAttenuverter: 0.9,
+		Rate:             cascadelfo.CVToRate(0.8),
+		RateAttenuverter: cascadelfo.CVToRateAV(0.9),
 	}); err != nil {
 		panic(err)
 	}
@@ -145,8 +145,8 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	return nil
 }
 
-func (m *UnfoldableSpace) Clock() {
-	m.trigClock(true)
+func (m *UnfoldableSpace) Clock(high bool) {
+	m.trigClock(high)
 }
 
 func (m *UnfoldableSpace) EnableInternalClock(enabled bool) {

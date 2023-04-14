@@ -14,10 +14,6 @@ func (scaleCAugmented) Mode() Scale {
 	return ScaleC_Augmented
 }
 
-func (scaleCAugmented) Name() string {
-	return "C aug"
-}
-
 var (
 	cScaleC_Augmented = []units.VOct{keyC, keyDSharp, keyE, keyG, keyAFlat, keyB}
 )

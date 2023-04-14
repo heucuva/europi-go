@@ -2,6 +2,7 @@ package knobbank
 
 import (
 	"github.com/heucuva/europi/input"
+	"github.com/heucuva/europi/math"
 	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
@@ -35,6 +36,10 @@ func (kb *KnobBank) CurrentName() string {
 	return kb.bank[kb.current].name
 }
 
+func (kb *KnobBank) CurrentIndex() int {
+	return kb.current
+}
+
 func (kb *KnobBank) Current() input.AnalogReader {
 	return kb
 }
@@ -56,10 +61,7 @@ func (kb *KnobBank) ReadVoltage() float32 {
 }
 
 func (kb *KnobBank) ReadCV() units.CV {
-	// we can't use kb.Percent() here, because we might get over 5.0 volts input
-	// just clamp it
-	v := kb.ReadVoltage()
-	return units.CV(europim.Clamp(v/5.0, 0.0, 1.0))
+	return units.CV(math.Clamp(kb.Percent(), 0.0, 1.0))
 }
 
 func (kb *KnobBank) ReadVOct() units.VOct {

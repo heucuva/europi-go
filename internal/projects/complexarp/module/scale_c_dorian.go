@@ -14,10 +14,6 @@ func (scaleCDorian) Mode() Scale {
 	return ScaleC_Dorian
 }
 
-func (scaleCDorian) Name() string {
-	return "C dor"
-}
-
 var (
 	cScaleC_Dorian = []units.VOct{keyC, keyD, keyEFlat, keyF, keyG, keyAFlat, keyBFlat}
 )
