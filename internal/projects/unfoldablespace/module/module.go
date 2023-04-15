@@ -12,6 +12,7 @@ import (
 	randomgates "github.com/heucuva/europi/internal/projects/randomgates/module"
 	randomskips "github.com/heucuva/europi/internal/projects/randomskips/module"
 	threephaselfo "github.com/heucuva/europi/internal/projects/threephaselfo/module"
+	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
 
@@ -29,7 +30,13 @@ type UnfoldableSpace struct {
 	onTrigOutputGate1 func(high bool)
 	onSkipSetCV1      func(cv units.CV)
 	onSkipOutputGate1 func(high bool)
-	onLFOOutput5      func(cv units.CV)
+	onLFOOutput5      func(cv units.BipolarCV)
+}
+
+func clampToCV(fn func(units.CV)) func(cv units.BipolarCV) {
+	return func(cv units.BipolarCV) {
+		fn(europim.Clamp(units.CV(cv.ToFloat32()), 0.0, 1.0))
+	}
 }
 
 func (m *UnfoldableSpace) Init(config Config) error {
@@ -85,7 +92,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	}
 
 	if err := m.ModLFO.Init(cascadelfo.Config{
-		LFO: [8]func(cv units.CV){
+		LFO: [8]func(cv units.BipolarCV){
 			nil,             // LFO 1
 			nil,             // LFO 2
 			nil,             // LFO 3
@@ -104,7 +111,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	if err := m.ModEnv.Init(complexenvelope.Config{
 		Env: [2]complexenvelope.EnvelopeConfig{
 			{ // 1
-				Out:         config.SetLevel,
+				Out:         clampToCV(config.SetLevel),
 				Mode:        complexenvelope.EnvelopeModeAD,
 				AttackMode:  complexenvelope.FunctionModeLinear,
 				ReleaseMode: complexenvelope.FunctionModeExponential,
@@ -112,7 +119,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 				Decay:       0.6666666666666667,
 			},
 			{ // 2
-				Out: func(cv units.CV) {
+				Out: func(cv units.BipolarCV) {
 					config.SetLFOCV(cv)
 					m.ModLFO.SetCV(cv)
 				},
@@ -202,7 +209,7 @@ func (m *UnfoldableSpace) skipOutputGate1(high bool) {
 	m.ModArp.ArpClock(high)
 }
 
-func (m *UnfoldableSpace) lfoOutput5(cv units.CV) {
+func (m *UnfoldableSpace) lfoOutput5(cv units.BipolarCV) {
 	if m.onLFOOutput5 != nil {
 		m.onLFOOutput5(cv)
 	}

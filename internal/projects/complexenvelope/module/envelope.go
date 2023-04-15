@@ -11,7 +11,7 @@ type envelope struct {
 	model model
 }
 
-func noop(_ units.CV) {
+func noop(_ units.BipolarCV) {
 }
 
 func (e *envelope) Init(config EnvelopeConfig) error {
@@ -47,7 +47,7 @@ func (e *envelope) Init(config EnvelopeConfig) error {
 	return nil
 }
 
-func (e *envelope) SetCV(cv units.CV) {
+func (e *envelope) SetCV(cv units.BipolarCV) {
 	e.model.SetCV(cv)
 }
 

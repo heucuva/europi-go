@@ -21,8 +21,7 @@ func RateToString(rate units.Hertz) string {
 	return rate.String()
 }
 
-func AdjustRate(rate units.Hertz, cv units.CV, atten float32) units.Hertz {
-	ai := cv.ToFloat32()*2.0 - 1.0
-	modifiedRate := RateToCV(rate).ToFloat32() + ai*atten
-	return CVToRate(units.CV(modifiedRate))
+func AdjustRate(rate units.Hertz, cv units.BipolarCV, atten units.BipolarCV) units.Hertz {
+	modifiedRate := RateToCV(rate).ToBipolarCV() + cv*atten
+	return CVToRate(modifiedRate.ToCV())
 }

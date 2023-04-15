@@ -10,16 +10,16 @@ import (
 )
 
 type ComplexRandom struct {
-	attenA     units.CV
-	outA       func(cv units.CV)
-	attenB     units.CV
-	outB       func(cv units.CV)
+	attenA     units.BipolarCV
+	outA       func(cv units.BipolarCV)
+	attenB     units.BipolarCV
+	outB       func(cv units.BipolarCV)
 	clock      clock
 	slewB      units.CV
 	slewLength time.Duration
 	slewT      time.Duration
-	slewStart  units.CV
-	slewEnd    units.CV
+	slewStart  units.BipolarCV
+	slewEnd    units.BipolarCV
 	gd         units.CV
 	pd         float32
 	pc         float32
@@ -30,7 +30,7 @@ const (
 	limitedSpectrum = time.Second * 15 / 22050
 )
 
-func noop(_ units.CV) {
+func noop(_ units.BipolarCV) {
 }
 
 func (m *ComplexRandom) Init(config Config) error {
@@ -111,7 +111,7 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 			t := europim.Clamp(m.slewT+deltaTime, 0, m.slewLength)
 			x := float32(t.Seconds() / m.slewLength.Seconds())
 
-			var b units.CV
+			var b units.BipolarCV
 			if x >= 1 {
 				t = 0
 				b = m.slewEnd
@@ -140,12 +140,12 @@ func (m *ComplexRandom) processTrigger() {
 
 	m.pc = float32(f)
 
-	ra := units.CV(rand.Float32())
+	ra := units.CV(rand.Float32()).ToBipolarCV()
 	cva := ra * m.attenA
 
 	m.outA(cva)
 
-	rb := units.CV(rand.Float32())
+	rb := units.CV(rand.Float32()).ToBipolarCV()
 	cvb := rb * m.attenB
 
 	m.slewEnd = cvb

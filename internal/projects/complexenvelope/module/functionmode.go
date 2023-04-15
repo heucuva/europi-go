@@ -16,7 +16,7 @@ const (
 )
 
 type functionMode interface {
-	Calc(t, dur time.Duration) units.CV
+	Calc(t, dur time.Duration) units.BipolarCV
 }
 
 func (e envelope) getFunctionMode(mode FunctionMode) (functionMode, error) {

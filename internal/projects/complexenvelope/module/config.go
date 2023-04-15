@@ -7,7 +7,7 @@ type Config struct {
 }
 
 type EnvelopeConfig struct {
-	Out         func(cv units.CV)
+	Out         func(cv units.BipolarCV)
 	Mode        EnvelopeMode
 	AttackMode  FunctionMode
 	ReleaseMode FunctionMode

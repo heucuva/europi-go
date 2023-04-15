@@ -3,7 +3,7 @@ package module
 import "github.com/heucuva/europi/units"
 
 type Config struct {
-	LFO              [8]func(cv units.CV)
+	LFO              [8]func(cv units.BipolarCV)
 	Rate             units.Hertz
-	RateAttenuverter float32
+	RateAttenuverter units.BipolarCV
 }

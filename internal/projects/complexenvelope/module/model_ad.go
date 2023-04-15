@@ -8,12 +8,12 @@ import (
 )
 
 type modelAD struct {
-	out       func(cv units.CV)
+	out       func(cv units.BipolarCV)
 	attack    functionMode
 	attackDur time.Duration
 	decay     functionMode
 	decayDur  time.Duration
-	atten     units.CV
+	atten     units.BipolarCV
 	state     state
 	stateTime time.Duration
 }
@@ -23,7 +23,7 @@ func (m *modelAD) Trigger() {
 	m.stateTime = 0
 }
 
-func (m *modelAD) SetCV(cv units.CV) {
+func (m *modelAD) SetCV(cv units.BipolarCV) {
 	m.atten = cv
 }
 

@@ -50,16 +50,16 @@ func startLoop(e *europi.EuroPi) {
 	setLevel := func(cv units.CV) {
 		e.CV2.SetVoltage(cv.ToVolts())
 	}
-	setTimbre := func(cv units.CV) {
+	setTimbre := func(cv units.BipolarCV) {
 		e.CV3.SetVoltage(cv.ToVolts())
 	}
-	setHarmo := func(cv units.CV) {
+	setHarmo := func(cv units.BipolarCV) {
 		e.CV4.SetVoltage(cv.ToVolts())
 	}
-	setMorph := func(cv units.CV) {
+	setMorph := func(cv units.BipolarCV) {
 		e.CV5.SetVoltage(cv.ToVolts())
 	}
-	setLFOCV := func(cv units.CV) {
+	setLFOCV := func(cv units.BipolarCV) {
 		e.CV6.SetVoltage(cv.ToVolts())
 	}
 

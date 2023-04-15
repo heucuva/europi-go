@@ -22,20 +22,26 @@ var (
 	}
 )
 
+func bipolarOut(out func(units.CV)) func(cv units.BipolarCV) {
+	return func(cv units.BipolarCV) {
+		out(cv.ToCV())
+	}
+}
+
 func startLoop(e *europi.EuroPi) {
 	if err := lfo.Init(module.Config{
-		LFO: [8]func(cv units.CV){
-			e.CV1.SetCV, // LFO 1
-			e.CV2.SetCV, // LFO 2
-			e.CV3.SetCV, // LFO 3
-			e.CV4.SetCV, // LFO 4
-			e.CV5.SetCV, // LFO 5
-			e.CV6.SetCV, // LFO 6
-			nil,         // LFO 7
-			nil,         // LFO 8
+		LFO: [8]func(cv units.BipolarCV){
+			bipolarOut(e.CV1.SetCV), // LFO 1
+			bipolarOut(e.CV2.SetCV), // LFO 2
+			bipolarOut(e.CV3.SetCV), // LFO 3
+			bipolarOut(e.CV4.SetCV), // LFO 4
+			bipolarOut(e.CV5.SetCV), // LFO 5
+			bipolarOut(e.CV6.SetCV), // LFO 6
+			nil,                     // LFO 7
+			nil,                     // LFO 8
 		},
-		Rate:             16.0,
-		RateAttenuverter: module.CVToRateAV(0.9),
+		Rate:             16.0, // Hz
+		RateAttenuverter: 0.8,  // +80%
 	}); err != nil {
 		panic(err)
 	}
@@ -46,7 +52,7 @@ func startLoop(e *europi.EuroPi) {
 }
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	lfo.SetCV(e.AI.ReadCV())
+	lfo.SetCV(e.AI.ReadCV().ToBipolarCV())
 	lfo.Tick(deltaTime)
 }
 

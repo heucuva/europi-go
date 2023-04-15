@@ -9,11 +9,11 @@ import (
 
 type functionModeQuartic struct{}
 
-func (functionModeQuartic) Calc(t, dur time.Duration) units.CV {
+func (functionModeQuartic) Calc(t, dur time.Duration) units.BipolarCV {
 	maxT := float32(dur.Seconds())
 	if maxT == 0 {
 		return 0.0
 	}
 	curT := float32(t.Seconds())
-	return units.CV(math.Pow(float64(curT/maxT), 3.32))
+	return units.BipolarCV(math.Pow(float64(curT/maxT), 3.32))
 }

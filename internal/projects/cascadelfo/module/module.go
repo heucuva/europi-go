@@ -7,18 +7,18 @@ import (
 )
 
 type CascadeLFO struct {
-	cv     units.CV
+	cv     units.BipolarCV
 	lfo    [8]lfo
 	rate   units.Hertz
-	rateAV float32
+	rateAV units.BipolarCV
 }
 
-func noop(_ units.CV) {
+func noop(_ units.BipolarCV) {
 }
 
 func (m *CascadeLFO) Init(config Config) error {
 	m.rate = config.Rate
-	m.SetAttenuverter(config.RateAttenuverter)
+	m.rateAV = config.RateAttenuverter
 	for i := range m.lfo {
 		o := &m.lfo[i]
 		f := config.LFO[i]
@@ -31,15 +31,15 @@ func (m *CascadeLFO) Init(config Config) error {
 	return nil
 }
 
-func (m *CascadeLFO) SetCV(cv units.CV) {
+func (m *CascadeLFO) SetCV(cv units.BipolarCV) {
 	m.cv = cv
 }
 
-func (m *CascadeLFO) SetAttenuverter(av float32) {
+func (m *CascadeLFO) SetAttenuverter(av units.BipolarCV) {
 	m.rateAV = av
 }
 
-func (m *CascadeLFO) Attenuverter() float32 {
+func (m *CascadeLFO) Attenuverter() units.BipolarCV {
 	return m.rateAV
 }
 

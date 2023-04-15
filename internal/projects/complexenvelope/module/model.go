@@ -8,6 +8,6 @@ import (
 
 type model interface {
 	Trigger()
-	SetCV(cv units.CV)
+	SetCV(cv units.BipolarCV)
 	Tick(deltaTime time.Duration)
 }

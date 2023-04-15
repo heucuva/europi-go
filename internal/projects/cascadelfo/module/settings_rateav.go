@@ -6,14 +6,14 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-func CVToRateAV(cv units.CV) float32 {
-	return cv.ToFloat32()*2.0 - 1.0
+func CVToRateAV(cv units.CV) units.BipolarCV {
+	return cv.ToBipolarCV()
 }
 
-func RateAVToCV(rateav float32) units.CV {
-	return units.CV((rateav + 1.0) / 2.0)
+func RateAVToCV(rateav units.BipolarCV) units.CV {
+	return rateav.ToCV()
 }
 
-func RateAVToString(rateav float32) string {
+func RateAVToString(rateav units.BipolarCV) string {
 	return fmt.Sprintf("%+3.1f%%", rateav*100.0)
 }

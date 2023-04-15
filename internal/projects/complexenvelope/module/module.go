@@ -20,7 +20,7 @@ func (m *ComplexEnvelope) Init(config Config) error {
 	return nil
 }
 
-func (m *ComplexEnvelope) SetCV(env int, cv units.CV) {
+func (m *ComplexEnvelope) SetCV(env int, cv units.BipolarCV) {
 	if env < 0 || env >= len(m.env) {
 		panic("env: out of range")
 	}

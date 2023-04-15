@@ -8,11 +8,11 @@ import (
 
 type functionModeLinear struct{}
 
-func (functionModeLinear) Calc(t, dur time.Duration) units.CV {
+func (functionModeLinear) Calc(t, dur time.Duration) units.BipolarCV {
 	maxT := float32(dur.Seconds())
 	if maxT == 0 {
 		return 0.0
 	}
 	curT := float32(t.Seconds())
-	return units.CV(curT / maxT)
+	return units.BipolarCV(curT / maxT)
 }
