@@ -103,7 +103,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 			nil,             // LFO 8
 		},
 		Rate:             cascadelfo.CVToRate(0.8),
-		RateAttenuverter: cascadelfo.CVToRateAV(0.9),
+		RateAttenuverter: 0.8, // +80%
 	}); err != nil {
 		panic(err)
 	}
