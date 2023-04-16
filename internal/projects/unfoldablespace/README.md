@@ -83,6 +83,7 @@ The order of the displays is:
 - Complex Arpeggiator configuration
 - Cascading LFO configuration
 - Complex Envelope configuration
+- Complex Random configuration
 
 #### Main Display
 
@@ -169,6 +170,23 @@ By default, the settings of Complex Envelope are:
 When on the Complex Envelope Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 
 The current envelope being displayed/edited will be shown in the upper-right corner of the screen and may be cycled through by briefly pressing Button 2 on the EuroPi.
+
+#### Complex Random Configuration
+
+By default, the settings of Complex Random are:
+- Sample Attenuator A (Attn.A): 60.0%
+- Gate Density (GDense): 40.0%
+- Pulse Stage Divider (PSD): 1
+- Sample Attenuator B (Attn.B): 20.0%
+- Sample Slew B (SlewB): 30.0%
+- Clock Speed (CSpeed): 40.0%
+- Clock Range (CRange): Full
+
+When on the Complex Random Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+Clock Ranges are as follows:
+- Full: 22050 Hz range
+- Limited: 1470 Hz range
 
 ## Internal *'Module'* Configuration
 

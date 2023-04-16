@@ -10,90 +10,154 @@ import (
 )
 
 type ComplexRandom struct {
-	attenA     units.BipolarCV
-	outA       func(cv units.BipolarCV)
-	attenB     units.BipolarCV
-	outB       func(cv units.BipolarCV)
-	clock      clock
-	slewB      units.CV
+	sampleOutA        func(cv units.CV)
+	sampleOutB        func(cv units.CV)
+	sampleAttenuatorA units.CV
+	integrationSlope  units.CV
+	gateDensity       units.CV
+	pulseStageDivider float32
+	sampleAttenuatorB units.CV
+	sampleSlewB       units.CV
+	clockRange        Clock
+
 	slewLength time.Duration
 	slewT      time.Duration
-	slewStart  units.BipolarCV
-	slewEnd    units.BipolarCV
-	gd         units.CV
-	pd         float32
+	slewStart  units.CV
+	slewEnd    units.CV
 	pc         float32
-}
-
-const (
-	fullSpectrum    = time.Second / 22050
-	limitedSpectrum = time.Second * 15 / 22050
-)
-
-func noop(_ units.BipolarCV) {
+	clock      clock
 }
 
 func (m *ComplexRandom) Init(config Config) error {
+	fnSampleOutA := config.SampleOutA
+	if fnSampleOutA == nil {
+		fnSampleOutA = noopSampleOut
+	}
+	m.sampleOutA = fnSampleOutA
+
+	fnSampleOutB := config.SampleOutB
+	if fnSampleOutB == nil {
+		fnSampleOutB = noopSampleOut
+	}
+	m.sampleOutB = fnSampleOutB
+
+	m.sampleAttenuatorA = config.SampleAttenuatorA
+	m.integrationSlope = config.IntegrationSlope
+	m.gateDensity = config.GateDensity
+	m.sampleAttenuatorB = config.SampleAttenuatorB
+
 	var err error
 	m.clock, err = getClock(config.ClockRange)
 	if err != nil {
 		return err
 	}
+	m.clockRange = config.ClockRange
 
-	m.SetClockRate(config.ClockSpeed)
+	m.SetClockSpeed(config.ClockSpeed)
 
-	m.outA = config.SampleOutA
-	if m.outA == nil {
-		m.outA = noop
+	m.sampleSlewB = config.SampleSlewB
+	m.slewLength = europim.Lerp(m.sampleSlewB.ToFloat32(), 0, time.Second)
+	if m.slewLength < m.slewT {
+		m.slewT = 0
 	}
 
-	m.outB = config.SampleOutB
-	if m.outB == nil {
-		m.outB = noop
-	}
-
-	m.attenA = config.SampleAttenuatorA
-	m.attenB = config.SampleAttenuatorB
-
-	m.SetSlewB(config.SampleSlewB)
-
-	m.gd = config.GateDensity
-	m.pd = config.PulseStageDivider
+	m.SetPulseStageDivider(config.PulseStageDivider)
 
 	return nil
 }
 
-func (m *ComplexRandom) SetClockRate(cv units.CV) {
-	m.clock.SetRate(cv)
-}
-
-func (m *ComplexRandom) ClockRate() units.CV {
-	return m.clock.Rate()
-}
-
-func (m *ComplexRandom) SetSlewB(cv units.CV) {
-	if m.slewB == cv {
-		// no change
-		return
-	}
-
-	m.slewB = cv
-	m.slewLength = europim.Lerp(m.slewB.ToFloat32(), 0, time.Second)
-	if m.slewLength < m.slewT {
-		m.slewT = 0
-	}
-}
-
-func (m *ComplexRandom) SlewB() units.CV {
-	return m.slewB
+func noopSampleOut(cv units.CV) {
 }
 
 func (m *ComplexRandom) Gate(high bool) {
 	// TODO
 }
 
-func (m *ComplexRandom) SetSample(cv units.CV) {
-	// TODO
+func (m *ComplexRandom) SetSampleAttenuatorA(cv units.CV) {
+	m.sampleAttenuatorA = cv
+}
+
+func (m *ComplexRandom) SampleAttenuatorA() units.CV {
+	return m.sampleAttenuatorA
+}
+
+func (m *ComplexRandom) SetIntegrationSlope(cv units.CV) {
+	m.integrationSlope = cv
+}
+
+func (m *ComplexRandom) IntegrationSlope() units.CV {
+	return m.integrationSlope
+}
+
+func (m *ComplexRandom) SetGateDensity(cv units.CV) {
+	m.gateDensity = cv
+}
+
+func (m *ComplexRandom) GateDensity() units.CV {
+	return m.gateDensity
+}
+
+func (m *ComplexRandom) SetPulseStageDivider(psd int) {
+	m.pulseStageDivider = float32(psd)
+}
+
+func (m *ComplexRandom) PulseStageDivider() int {
+	return int(m.pulseStageDivider)
+}
+
+func (m *ComplexRandom) SetSampleAttenuatorB(cv units.CV) {
+	m.sampleAttenuatorB = cv
+}
+
+func (m *ComplexRandom) SampleAttenuatorB() units.CV {
+	return m.sampleAttenuatorB
+}
+
+func (m *ComplexRandom) SetSampleSlewB(cv units.CV) {
+	if m.sampleSlewB == cv {
+		// no change
+		return
+	}
+
+	m.sampleSlewB = cv
+	m.slewLength = europim.Lerp(m.sampleSlewB.ToFloat32(), 0, time.Second)
+	if m.slewLength < m.slewT {
+		m.slewT = 0
+	}
+}
+
+func (m *ComplexRandom) SampleSlewB() units.CV {
+	return m.sampleSlewB
+}
+
+func (m *ComplexRandom) SetClockSpeed(cv units.CV) {
+	m.clock.SetRate(cv)
+}
+
+func (m *ComplexRandom) ClockSpeed() units.CV {
+	return m.clock.Rate()
+}
+
+func (m *ComplexRandom) SetClockRange(mode Clock) {
+	if m.clockRange == mode {
+		// no change
+		return
+	}
+
+	speed := m.clock.Rate()
+
+	var err error
+	m.clock, err = getClock(mode)
+	if err != nil {
+		panic(err)
+	}
+
+	m.clockRange = mode
+	m.clock.SetRate(speed)
+}
+
+func (m *ComplexRandom) ClockRange() Clock {
+	return m.clockRange
 }
 
 func (m *ComplexRandom) Tick(deltaTime time.Duration) {
@@ -106,12 +170,12 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 	if m.slewStart != m.slewEnd {
 		if m.slewLength == 0 {
 			m.slewStart = m.slewEnd
-			m.outB(m.slewStart)
+			m.sampleOutB(m.slewStart)
 		} else {
 			t := europim.Clamp(m.slewT+deltaTime, 0, m.slewLength)
 			x := float32(t.Seconds() / m.slewLength.Seconds())
 
-			var b units.BipolarCV
+			var b units.CV
 			if x >= 1 {
 				t = 0
 				b = m.slewEnd
@@ -121,18 +185,18 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 			}
 
 			m.slewT = t
-			m.outB(b)
+			m.sampleOutB(b)
 		}
 	}
 }
 
 func (m *ComplexRandom) processTrigger() {
-	if rand.Float32() < m.gd.ToFloat32() {
+	if rand.Float32() < m.gateDensity.ToFloat32() {
 		return
 	}
 
 	pcd := m.pc + 1
-	i, f := math.Modf(float64(pcd) / float64(m.pd))
+	i, f := math.Modf(float64(pcd) / float64(m.pulseStageDivider))
 	if i == 0 {
 		m.pc = pcd
 		return
@@ -140,13 +204,13 @@ func (m *ComplexRandom) processTrigger() {
 
 	m.pc = float32(f)
 
-	ra := units.CV(rand.Float32()).ToBipolarCV()
-	cva := ra * m.attenA
+	ra := units.CV(rand.Float32())
+	cva := ra * m.sampleAttenuatorA
 
-	m.outA(cva)
+	m.sampleOutA(cva)
 
-	rb := units.CV(rand.Float32()).ToBipolarCV()
-	cvb := rb * m.attenB
+	rb := units.CV(rand.Float32())
+	cvb := rb * m.sampleAttenuatorB
 
 	m.slewEnd = cvb
 }

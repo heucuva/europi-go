@@ -10,6 +10,7 @@ import (
 	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
 	arpScreen "github.com/heucuva/europi/internal/projects/complexarp/screen"
 	envScreen "github.com/heucuva/europi/internal/projects/complexenvelope/screen"
+	rndScreen "github.com/heucuva/europi/internal/projects/complexrandom/screen"
 	trigScreen "github.com/heucuva/europi/internal/projects/randomgates/screen"
 	skipScreen "github.com/heucuva/europi/internal/projects/randomskips/screen"
 	modScreen "github.com/heucuva/europi/internal/projects/threephaselfo/screen"
@@ -45,6 +46,9 @@ var (
 	screenEnv = envScreen.Settings{
 		Env: &unfold.ModEnv,
 	}
+	screenRnd = rndScreen.Settings{
+		ComplexRandom: &unfold.ModRnd,
+	}
 )
 
 func startLoop(e *europi.EuroPi) {
@@ -54,10 +58,10 @@ func startLoop(e *europi.EuroPi) {
 	setLevel := func(cv units.CV) {
 		e.CV2.SetVoltage(cv.ToVolts())
 	}
-	setTimbre := func(cv units.BipolarCV) {
+	setTimbre := func(cv units.CV) {
 		e.CV3.SetVoltage(cv.ToVolts())
 	}
-	setHarmo := func(cv units.BipolarCV) {
+	setHarmo := func(cv units.CV) {
 		e.CV4.SetVoltage(cv.ToVolts())
 	}
 	setMorph := func(cv units.BipolarCV) {
@@ -99,6 +103,7 @@ func main() {
 		screenbank.WithScreen("arp", "\u26bd", &screenArp),
 		screenbank.WithScreen("lfo", "\u2797", &screenLFO),
 		screenbank.WithScreen("env", "\u2709", &screenEnv),
+		screenbank.WithScreen("rnd", "\u2744", &screenRnd),
 	)
 	if err != nil {
 		panic(err)

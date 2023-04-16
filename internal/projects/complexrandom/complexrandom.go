@@ -1,17 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"machine"
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/screenbank"
 	"github.com/heucuva/europi/internal/projects/complexrandom/module"
+	"github.com/heucuva/europi/internal/projects/complexrandom/screen"
+	"github.com/heucuva/europi/units"
 )
 
 var (
-	rnd module.ComplexRandom
+	rnd        module.ComplexRandom
+	ui         *screenbank.ScreenBank
+	screenMain = screen.Main{
+		ComplexRandom: &rnd,
+	}
+	screenSettings = screen.Settings{
+		ComplexRandom: &rnd,
+	}
 )
+
+func bipolarOut(out func(units.CV)) func(cv units.BipolarCV) {
+	return func(cv units.BipolarCV) {
+		out(cv.ToCV())
+	}
+}
 
 func startLoop(e *europi.EuroPi) {
 	if err := rnd.Init(module.Config{
@@ -20,7 +35,7 @@ func startLoop(e *europi.EuroPi) {
 		SampleAttenuatorA: 0.6,
 		IntegrationSlope:  0.0,
 		GateDensity:       0.4,
-		PulseStageDivider: 1.0,
+		PulseStageDivider: 1,
 		SampleAttenuatorB: 0.2,
 		SampleSlewB:       0.3,
 		ClockSpeed:        0.4,
@@ -35,35 +50,20 @@ func startLoop(e *europi.EuroPi) {
 	})
 }
 
-var (
-	displayDelay time.Duration
-)
-
-const (
-	displayRate       = time.Millisecond * 150
-	line1y      int16 = 11
-	line2y      int16 = 23
-)
-
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	rnd.SetClockRate(e.K1.ReadCV())
-	rnd.SetSlewB(e.K2.ReadCV())
-	rnd.SetSample(e.AI.ReadCV())
 	rnd.Tick(deltaTime)
-
-	displayDelay += deltaTime
-	if displayDelay > displayRate {
-		displayDelay %= displayRate
-
-		disp := e.Display
-		disp.ClearBuffer()
-		disp.WriteLine(fmt.Sprintf("Clk:%2.1f Slw:%2.1f", rnd.ClockRate(), rnd.SlewB()), 0, line1y)
-		disp.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f", e.CV1.Voltage(), e.CV2.Voltage()), 0, line2y)
-		disp.Display()
-	}
 }
 
 func main() {
+	var err error
+	ui, err = screenbank.NewScreenBank(
+		screenbank.WithScreen("main", "\u2b50", &screenMain),
+		screenbank.WithScreen("settings", "\u2611", &screenSettings),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// some options shown below are being explicitly set to their defaults
 	// only to showcase their existence.
 	europi.Bootstrap(
@@ -72,5 +72,7 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
+		europi.UI(ui),
+		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

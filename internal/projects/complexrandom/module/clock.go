@@ -14,6 +14,11 @@ const (
 	ClockLimited
 )
 
+const (
+	fullSpectrum    = time.Second / 22050
+	limitedSpectrum = time.Second * 15 / 22050
+)
+
 type clock interface {
 	Tick(timeDelta time.Duration) bool
 	SetRate(cv units.CV)
@@ -32,5 +37,16 @@ func getClock(mode Clock) (clock, error) {
 		}, nil
 	default:
 		return nil, fmt.Errorf("unsupported clock mode: %d", mode)
+	}
+}
+
+func (c Clock) String() string {
+	switch c {
+	case ClockFull:
+		return "Full"
+	case ClockLimited:
+		return "Limited"
+	default:
+		return ""
 	}
 }
