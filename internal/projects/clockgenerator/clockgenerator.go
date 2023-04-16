@@ -22,8 +22,9 @@ var (
 
 func startLoop(e *europi.EuroPi) {
 	if err := clock.Init(module.Config{
-		BPM:     120.0,
-		Enabled: true,
+		BPM:          120.0,
+		GateDuration: time.Millisecond * 100,
+		Enabled:      true,
 		ClockOut: func(high bool) {
 			if high {
 				e.CV1.On()

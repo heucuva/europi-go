@@ -12,14 +12,14 @@ const (
 	MaxBPM float32 = 480.0
 )
 
-func CVToBPM(cv units.CV) float32 {
-	return europim.Lerp(cv.ToFloat32(), MinBPM, MaxBPM)
+func BPMString(bpm float32) string {
+	return fmt.Sprintf(`%3.1f`, bpm)
 }
 
 func BPMToCV(bpm float32) units.CV {
 	return units.CV(europim.InverseLerp(bpm, MinBPM, MaxBPM))
 }
 
-func BPMToString(bpm float32) string {
-	return fmt.Sprintf("%3.1f", bpm)
+func CVToBPM(cv units.CV) float32 {
+	return europim.Lerp(cv.ToFloat32(), MinBPM, MaxBPM)
 }

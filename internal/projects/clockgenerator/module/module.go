@@ -11,7 +11,7 @@ type ClockGenerator struct {
 	interval     time.Duration
 	gateDuration time.Duration
 	enabled      bool
-	out          func(high bool)
+	clockOut     func(high bool)
 	t            time.Duration
 	gateT        time.Duration
 	gateLevel    bool
@@ -19,27 +19,28 @@ type ClockGenerator struct {
 	bpm float32 // informational
 }
 
-func noop(_ bool) {
-}
-
 func (m *ClockGenerator) Init(config Config) error {
+	fnClockOut := config.ClockOut
+	if fnClockOut == nil {
+		fnClockOut = noopClockOut
+	}
+	m.clockOut = fnClockOut
+
+	m.bpm = config.BPM
 	if config.BPM <= 0 {
 		return fmt.Errorf("invalid bpm setting: %v", config.BPM)
 	}
-
-	m.enabled = config.Enabled
 	m.gateDuration = config.GateDuration
 	if m.gateDuration == 0 {
 		m.gateDuration = DefaultGateDuration
 	}
-
-	m.out = config.ClockOut
-	if m.out == nil {
-		m.out = noop
-	}
+	m.enabled = config.Enabled
 
 	m.SetBPM(config.BPM)
 	return nil
+}
+
+func noopClockOut(high bool) {
 }
 
 func (m *ClockGenerator) Toggle() {
@@ -56,10 +57,6 @@ func (m *ClockGenerator) Enabled() bool {
 	return m.enabled
 }
 
-func (m *ClockGenerator) BPM() float32 {
-	return m.bpm
-}
-
 func (m *ClockGenerator) SetBPM(bpm float32) {
 	if bpm == 0 {
 		bpm = 120.0
@@ -68,12 +65,16 @@ func (m *ClockGenerator) SetBPM(bpm float32) {
 	m.interval = time.Duration(float32(time.Minute) / bpm)
 }
 
-func (m *ClockGenerator) SetGateDuration(duration time.Duration) {
-	if duration == 0 {
-		duration = DefaultGateDuration
+func (m *ClockGenerator) BPM() float32 {
+	return m.bpm
+}
+
+func (m *ClockGenerator) SetGateDuration(dur time.Duration) {
+	if dur == 0 {
+		dur = DefaultGateDuration
 	}
 
-	m.gateDuration = europim.Clamp(duration, time.Microsecond, m.interval-time.Microsecond)
+	m.gateDuration = europim.Clamp(dur, time.Microsecond, m.interval-time.Microsecond)
 }
 
 func (m *ClockGenerator) GateDuration() time.Duration {
@@ -102,7 +103,7 @@ func (m *ClockGenerator) Tick(deltaTime time.Duration) {
 	}
 
 	if m.gateLevel != prevGateLevel {
-		m.out(m.gateLevel)
+		m.clockOut(m.gateLevel)
 	}
 }
 

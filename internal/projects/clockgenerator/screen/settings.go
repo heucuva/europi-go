@@ -16,33 +16,33 @@ type Settings struct {
 }
 
 func (m *Settings) bpmString() string {
-	return module.BPMToString(m.Clock.BPM())
+	return module.BPMString(m.Clock.BPM())
 }
 
 func (m *Settings) bpmValue() units.CV {
 	return module.BPMToCV(m.Clock.BPM())
 }
 
-func (m *Settings) setBpmValue(value units.CV) {
+func (m *Settings) setBPMValue(value units.CV) {
 	m.Clock.SetBPM(module.CVToBPM(value))
 }
 
-func (m *Settings) gateString() string {
-	return module.GateDurationToString(m.Clock.GateDuration())
+func (m *Settings) gateDurationString() string {
+	return module.GateDurationString(m.Clock.GateDuration())
 }
 
-func (m *Settings) gateValue() units.CV {
+func (m *Settings) gateDurationValue() units.CV {
 	return module.GateDurationToCV(m.Clock.GateDuration())
 }
 
-func (m *Settings) setGateValue(value units.CV) {
+func (m *Settings) setGateDurationValue(value units.CV) {
 	m.Clock.SetGateDuration(module.CVToGateDuration(value))
 }
 
 func (m *Settings) Start(e *europi.EuroPi) {
 	km, err := knobmenu.NewKnobMenu(e.K1,
-		knobmenu.WithItem("bpm", "BPM", m.bpmString, m.bpmValue, m.setBpmValue),
-		knobmenu.WithItem("gate", "Gate", m.gateString, m.gateValue, m.setGateValue),
+		knobmenu.WithItem("bpm", "BPM", m.bpmString, m.bpmValue, m.setBPMValue),
+		knobmenu.WithItem("gateDuration", "Gate", m.gateDurationString, m.gateDurationValue, m.setGateDurationValue),
 	)
 	if err != nil {
 		panic(err)
