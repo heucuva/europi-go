@@ -7,50 +7,64 @@ import (
 )
 
 type ThreePhaseLFO struct {
-	t         time.Duration
-	interval  time.Duration
-	wave      wave
-	degree0   func(cv units.CV)
-	degree120 func(cv units.CV)
-	degree240 func(cv units.CV)
-}
+	degree0   func(cv units.BipolarCV)
+	degree120 func(cv units.BipolarCV)
+	degree240 func(cv units.BipolarCV)
+	waveMode  WaveMode
+	phi3Rate  units.Hertz
+	skewRate  units.Hertz
+	skewShape units.CV
 
-func noop(_ units.CV) {
+	t        time.Duration
+	interval time.Duration
+	wave     wave
 }
 
 func (m *ThreePhaseLFO) Init(config Config) error {
-	m.degree0 = config.Degree0
-	if m.degree0 == nil {
-		m.degree0 = noop
+	fnDegree0 := config.Degree0
+	if fnDegree0 == nil {
+		fnDegree0 = noopDegree0
 	}
+	m.degree0 = fnDegree0
 
-	m.degree120 = config.Degree120
-	if m.degree120 == nil {
-		m.degree120 = noop
+	fnDegree120 := config.Degree120
+	if fnDegree120 == nil {
+		fnDegree120 = noopDegree120
 	}
+	m.degree120 = fnDegree120
 
-	m.degree240 = config.Degree240
-	if m.degree240 == nil {
-		m.degree240 = noop
+	fnDegree240 := config.Degree240
+	if fnDegree240 == nil {
+		fnDegree240 = noopDegree240
 	}
+	m.degree240 = fnDegree240
 
-	m.SetRate(config.Phi3Rate)
+	m.skewRate = config.SkewRate
+	m.skewShape = config.SkewShape
+
+	m.SetPhi3Rate(config.Phi3Rate)
 
 	var err error
+	m.waveMode = config.WaveMode + 1
 	m.wave, err = getWaveMode(config.WaveMode)
 	return err
 }
 
-func (m *ThreePhaseLFO) SetRate(rate units.Hertz) {
-	m.interval = rate.ToPeriod()
+func noopDegree0(cv units.BipolarCV) {
 }
 
-func (m *ThreePhaseLFO) Rate() units.Hertz {
-	return units.Hertz(time.Second) / units.Hertz(m.interval)
+func noopDegree120(cv units.BipolarCV) {
 }
 
-func (m *ThreePhaseLFO) SetWave(mode WaveMode) {
-	if mode == m.wave.Mode() {
+func noopDegree240(cv units.BipolarCV) {
+}
+
+func (m *ThreePhaseLFO) Reset() {
+	panic("unimplemented")
+}
+
+func (m *ThreePhaseLFO) SetWaveMode(mode WaveMode) {
+	if mode == m.waveMode {
 		// no change
 		return
 	}
@@ -61,10 +75,36 @@ func (m *ThreePhaseLFO) SetWave(mode WaveMode) {
 	}
 
 	m.wave = wave
+	m.waveMode = mode
 }
 
-func (m *ThreePhaseLFO) Wave() WaveMode {
-	return m.wave.Mode()
+func (m *ThreePhaseLFO) WaveMode() WaveMode {
+	return m.waveMode
+}
+
+func (m *ThreePhaseLFO) SetPhi3Rate(freq units.Hertz) {
+	m.phi3Rate = freq
+	m.interval = freq.ToPeriod()
+}
+
+func (m *ThreePhaseLFO) Phi3Rate() units.Hertz {
+	return m.phi3Rate
+}
+
+func (m *ThreePhaseLFO) SetSkewRate(freq units.Hertz) {
+	m.skewRate = freq
+}
+
+func (m *ThreePhaseLFO) SkewRate() units.Hertz {
+	return m.skewRate
+}
+
+func (m *ThreePhaseLFO) SetSkewShape(cv units.CV) {
+	m.skewShape = cv
+}
+
+func (m *ThreePhaseLFO) SkewShape() units.CV {
+	return m.skewShape
 }
 
 func (m *ThreePhaseLFO) Tick(deltaTime time.Duration) {

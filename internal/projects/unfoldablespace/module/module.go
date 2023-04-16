@@ -58,10 +58,12 @@ func (m *UnfoldableSpace) Init(config Config) error {
 
 	if err := m.ModMod.Init(threephaselfo.Config{
 		WaveMode:  threephaselfo.WaveModeSine,
-		Phi3Rate:  threephaselfo.CVToRate(0.2),
-		SkewRate:  threephaselfo.CVToRate(0.0),
+		Phi3Rate:  threephaselfo.CVToPhi3Rate(0.2),
+		SkewRate:  threephaselfo.CVToSkewRate(0.0),
 		SkewShape: 0.05,
-		Degree0:   m.skipSetCV1,
+		Degree0: func(cv units.BipolarCV) {
+			m.skipSetCV1(cv.ToCV())
+		},
 	}); err != nil {
 		return err
 	}

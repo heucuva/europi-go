@@ -7,6 +7,6 @@ import (
 )
 
 type wave interface {
-	Get(t, interval time.Duration) (units.CV, units.CV, units.CV)
+	Get(t, interval time.Duration) (units.BipolarCV, units.BipolarCV, units.BipolarCV)
 	Mode() WaveMode
 }

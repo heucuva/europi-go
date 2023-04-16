@@ -18,3 +18,12 @@ func getWaveMode(mode WaveMode) (wave, error) {
 		return nil, fmt.Errorf("unsupported mode: %d", mode)
 	}
 }
+
+func (m WaveMode) String() string {
+	switch m {
+	case WaveModeSine:
+		return "sine"
+	default:
+		return ""
+	}
+}
