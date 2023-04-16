@@ -37,8 +37,8 @@ The main display shows the voltages of the CV outputs on the EuroPi.
 #### Cascading LFO Configuration
 
 By default, the settings of Cascading LFO are:
-- Rate Attenuverter: +80%
 - Rate: 16.0Hz
+- Rate Attenuverter: +80%
 
 When on the Cascading LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
 

@@ -15,18 +15,6 @@ type Settings struct {
 	LFO *module.CascadeLFO
 }
 
-func (m *Settings) rateAVString() string {
-	return module.RateAVToString(m.LFO.Attenuverter())
-}
-
-func (m *Settings) rateAVValue() units.CV {
-	return module.RateAVToCV(m.LFO.Attenuverter())
-}
-
-func (m *Settings) setRateAVValue(value units.CV) {
-	m.LFO.SetAttenuverter(module.CVToRateAV(value))
-}
-
 func (m *Settings) rateString() string {
 	return module.RateToString(m.LFO.Rate())
 }
@@ -39,10 +27,22 @@ func (m *Settings) setRateValue(value units.CV) {
 	m.LFO.SetRate(module.CVToRate(value))
 }
 
+func (m *Settings) rateAttenuverterString() string {
+	return module.RateAttenuverterToString(m.LFO.RateAttenuverter())
+}
+
+func (m *Settings) rateAttenuverterValue() units.CV {
+	return module.RateAttenuverterToCV(m.LFO.RateAttenuverter())
+}
+
+func (m *Settings) setRateAttenuverterValue(value units.CV) {
+	m.LFO.SetRateAttenuverter(module.CVToRateAttenuverter(value))
+}
+
 func (m *Settings) Start(e *europi.EuroPi) {
 	km, err := knobmenu.NewKnobMenu(e.K1,
-		knobmenu.WithItem("rateav", "R.AV", m.rateAVString, m.rateAVValue, m.setRateAVValue),
 		knobmenu.WithItem("rate", "Rate", m.rateString, m.rateValue, m.setRateValue),
+		knobmenu.WithItem("rateAttenuverter", "R.AV", m.rateAttenuverterString, m.rateAttenuverterValue, m.setRateAttenuverterValue),
 	)
 	if err != nil {
 		panic(err)
