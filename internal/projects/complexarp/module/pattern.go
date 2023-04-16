@@ -17,6 +17,7 @@ type pattern interface {
 	Init(config Config, m *ComplexArp) error
 	Next(m *ComplexArp) units.VOct
 	UpdateScale(s scale)
+	Pattern() Pattern
 }
 
 func (m *ComplexArp) setArpPattern(config Config) error {

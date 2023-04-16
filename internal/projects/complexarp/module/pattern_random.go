@@ -25,12 +25,16 @@ func (p *patternRandom) Next(m *ComplexArp) units.VOct {
 	}
 	p.prevNoise = curNoise
 
-	voct := m.patRange*units.VOct(curNoise) + m.patPitch
+	voct := m.arpRange*units.VOct(curNoise) + m.arpPitch
 	oct, v := math.Modf(float64(voct.ToFloat32()))
 
 	keys := m.scale.Keys()
 
 	return m.quantizer.QuantizeToValue(float32(v), keys) + units.VOct(oct)
+}
+
+func (p *patternRandom) Pattern() Pattern {
+	return PatternRandom
 }
 
 func (p *patternRandom) UpdateScale(s scale) {

@@ -27,7 +27,7 @@ func (p *patternBrownian) Init(config Config, m *ComplexArp) error {
 	// generate a random 'key' in range.
 	// really just garbage that will get cleaned up by the
 	// quantizer phase within the `next` function
-	randKey := m.patPitch + m.patRange*units.VOct(rand.Float32()*2.0-1.0)
+	randKey := m.arpPitch + m.arpRange*units.VOct(rand.Float32()*2.0-1.0)
 	p.prevKey = p.next(randKey, m)
 
 	return nil
@@ -39,10 +39,14 @@ func (p *patternBrownian) Next(m *ComplexArp) units.VOct {
 	return nextKey
 }
 
+func (p *patternBrownian) Pattern() Pattern {
+	return PatternBrownian
+}
+
 func (p *patternBrownian) next(prevKey units.VOct, m *ComplexArp) units.VOct {
 	nextKey := prevKey
-	minPitch := m.patPitch - m.patRange
-	maxPitch := m.patPitch + m.patRange
+	minPitch := m.arpPitch - m.arpRange
+	maxPitch := m.arpPitch + m.arpRange
 	for nextKey == prevKey {
 		curNoise := p.noise.Get()
 		up := curNoise >= p.prevNoise

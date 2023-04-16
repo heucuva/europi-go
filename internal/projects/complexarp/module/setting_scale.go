@@ -5,16 +5,8 @@ import (
 	"github.com/heucuva/europi/units"
 )
 
-func CVToScale(cv units.CV) Scale {
-	return europim.Lerp(cv.ToFloat32(), ScaleC_Lydian, ScaleC_Augmented)
-}
-
-func ScaleToCV(mode Scale) units.CV {
-	return units.CV(europim.InverseLerp(mode, ScaleC_Lydian, ScaleC_Augmented))
-}
-
-func ScaleToString(mode Scale) string {
-	switch mode {
+func ScaleString(s Scale) string {
+	switch s {
 	case ScaleC_Lydian:
 		return "C lyd"
 	case ScaleC_Major:
@@ -38,4 +30,12 @@ func ScaleToString(mode Scale) string {
 	default:
 		return ""
 	}
+}
+
+func ScaleToCV(s Scale) units.CV {
+	return units.CV(europim.InverseLerp(s, ScaleC_Lydian, ScaleC_Augmented))
+}
+
+func CVToScale(cv units.CV) Scale {
+	return europim.Lerp(cv.ToFloat32(), ScaleC_Lydian, ScaleC_Augmented)
 }

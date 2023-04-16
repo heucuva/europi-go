@@ -33,7 +33,7 @@ The order of the displays is:
 
 #### Main Display
 
-The main display shows the voltage of the CV 1 output on the EuroPi as well as the the currently selected scale and the range (in +/- V/Octaves) of the arpeggiation.
+The main display shows the voltages of the CV outputs on the EuroPi.
 
 #### Complex Arpeggiator Configuration
 
@@ -55,10 +55,6 @@ Scales are as follows:
 - "C aug" = C Augmented
 
 When on the Complex Arpeggiator Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
-
-### TODO
-
-More functionality and menu-diving to come...
 
 ## Special Thanks
 

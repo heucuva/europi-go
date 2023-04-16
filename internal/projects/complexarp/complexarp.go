@@ -12,8 +12,7 @@ import (
 )
 
 var (
-	arp module.ComplexArp
-
+	arp        module.ComplexArp
 	ui         *screenbank.ScreenBank
 	screenMain = screen.Main{
 		ComplexArp: &arp,
@@ -29,13 +28,13 @@ func startLoop(e *europi.EuroPi) {
 		ArpPattern: module.PatternBrownian,
 		Scale:      module.ScaleC_Major,
 		Quantizer:  quantizer.ModeRound,
-		ArpRange:   1.0,
 		ArpPitch:   4.0,
+		ArpRange:   1.0,
 	}); err != nil {
 		panic(err)
 	}
 
-	e.DI.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
+	e.DI.Handler(func(p machine.Pin) {
 		high := e.DI.Value()
 		arp.ArpClock(high)
 	})

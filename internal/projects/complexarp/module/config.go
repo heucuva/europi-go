@@ -10,6 +10,6 @@ type Config struct {
 	ArpPattern Pattern
 	Scale      Scale
 	Quantizer  quantizer.Mode
-	ArpRange   units.VOct
 	ArpPitch   units.VOct
+	ArpRange   units.VOct
 }

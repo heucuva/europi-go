@@ -16,46 +16,46 @@ type Settings struct {
 }
 
 func (m *Settings) scaleString() string {
-	return module.ScaleToString(m.ComplexArp.Scale())
+	return module.ScaleString(m.ComplexArp.Scale())
 }
 
 func (m *Settings) scaleValue() units.CV {
 	return module.ScaleToCV(m.ComplexArp.Scale())
 }
 
-func (m *Settings) setScaleCV(value units.CV) {
+func (m *Settings) setScaleValue(value units.CV) {
 	m.ComplexArp.SetScale(module.CVToScale(value))
 }
 
-func (m *Settings) pitchString() string {
-	return module.PitchToString(m.ComplexArp.ArpPitch())
+func (m *Settings) arpPitchString() string {
+	return module.ArpPitchString(m.ComplexArp.ArpPitch())
 }
 
-func (m *Settings) pitchValue() units.CV {
-	return module.PitchToCV(m.ComplexArp.ArpPitch())
+func (m *Settings) arpPitchValue() units.CV {
+	return module.ArpPitchToCV(m.ComplexArp.ArpPitch())
 }
 
-func (m *Settings) setPitchCV(value units.CV) {
-	m.ComplexArp.SetArpPitch(module.CVToPitch(value))
+func (m *Settings) setArpPitchValue(value units.CV) {
+	m.ComplexArp.SetArpPitch(module.CVToArpPitch(value))
 }
 
-func (m *Settings) rangeString() string {
-	return module.RangeToString(m.ComplexArp.ArpRange())
+func (m *Settings) arpRangeString() string {
+	return module.ArpRangeString(m.ComplexArp.ArpRange())
 }
 
-func (m *Settings) rangeValue() units.CV {
-	return module.RangeToCV(m.ComplexArp.ArpRange())
+func (m *Settings) arpRangeValue() units.CV {
+	return module.ArpRangeToCV(m.ComplexArp.ArpRange())
 }
 
-func (m *Settings) setRangeCV(value units.CV) {
-	m.ComplexArp.SetArpRange(module.CVToRange(value))
+func (m *Settings) setArpRangeValue(value units.CV) {
+	m.ComplexArp.SetArpRange(module.CVToArpRange(value))
 }
 
 func (m *Settings) Start(e *europi.EuroPi) {
 	km, err := knobmenu.NewKnobMenu(e.K1,
-		knobmenu.WithItem("scale", "Scale", m.scaleString, m.scaleValue, m.setScaleCV),
-		knobmenu.WithItem("pitch", "Pitch", m.pitchString, m.pitchValue, m.setPitchCV),
-		knobmenu.WithItem("range", "Range", m.rangeString, m.rangeValue, m.setRangeCV),
+		knobmenu.WithItem("scale", "Scale", m.scaleString, m.scaleValue, m.setScaleValue),
+		knobmenu.WithItem("arpPitch", "Pitch", m.arpPitchString, m.arpPitchValue, m.setArpPitchValue),
+		knobmenu.WithItem("arpRange", "Range", m.arpRangeString, m.arpRangeValue, m.setArpRangeValue),
 	)
 	if err != nil {
 		panic(err)

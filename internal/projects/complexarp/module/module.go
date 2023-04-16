@@ -8,19 +8,24 @@ import (
 )
 
 type ComplexArp struct {
-	out      func(voct units.VOct)
-	patRange units.VOct
-	patPitch units.VOct
-
+	arpOut     func(voct units.VOct)
+	arpPattern pattern
 	scale      scale
 	quantizer  quantizer.Quantizer[units.VOct]
-	arpPattern pattern
+	quantMode  quantizer.Mode
+	arpPitch   units.VOct
+	arpRange   units.VOct
 }
 
 func (m *ComplexArp) Init(config Config) error {
-	m.out = config.ArpOut
-	m.patRange = config.ArpRange
-	m.patPitch = config.ArpPitch
+	fnArpOut := config.ArpOut
+	if fnArpOut == nil {
+		fnArpOut = noopArpOut
+	}
+	m.arpOut = fnArpOut
+
+	m.arpPitch = config.ArpPitch
+	m.arpRange = config.ArpRange
 
 	if err := m.setScale(config.Scale); err != nil {
 		return err
@@ -37,36 +42,35 @@ func (m *ComplexArp) Init(config Config) error {
 	return nil
 }
 
+func noopArpOut(voct units.VOct) {
+}
+
 func (m *ComplexArp) ArpClock(high bool) {
 	if high {
 		voct := m.arpPattern.Next(m)
-		m.out(voct)
+		m.arpOut(voct)
 	}
 }
 
-func (m *ComplexArp) SetArpPitch(voct units.VOct) {
-	m.patPitch = voct
+func (m *ComplexArp) SetArpPattern(pat Pattern) {
+	if err := m.setArpPattern(Config{
+		ArpPattern: pat,
+	}); err != nil {
+		panic(err)
+	}
 }
 
-func (m *ComplexArp) ArpPitch() units.VOct {
-	return m.patPitch
+func (m *ComplexArp) ArpPattern() Pattern {
+	return m.arpPattern.Pattern()
 }
 
-func (m *ComplexArp) SetArpRange(voct units.VOct) {
-	m.patRange = voct
-}
-
-func (m *ComplexArp) ArpRange() units.VOct {
-	return m.patRange
-}
-
-func (m *ComplexArp) SetScale(mode Scale) {
-	if m.scale.Mode() == mode {
+func (m *ComplexArp) SetScale(s Scale) {
+	if s == m.scale.Mode() {
 		// no change
 		return
 	}
 
-	if err := m.setScale(mode); err != nil {
+	if err := m.setScale(s); err != nil {
 		panic(err)
 	}
 
@@ -75,6 +79,38 @@ func (m *ComplexArp) SetScale(mode Scale) {
 
 func (m *ComplexArp) Scale() Scale {
 	return m.scale.Mode()
+}
+
+func (m *ComplexArp) SetQuantizer(q quantizer.Mode) {
+	if q == m.quantMode {
+		// no change
+		return
+	}
+
+	if err := m.setArpQuantizer(q); err != nil {
+		panic(err)
+	}
+	m.quantMode = q
+}
+
+func (m *ComplexArp) Quantizer() quantizer.Mode {
+	return m.quantMode
+}
+
+func (m *ComplexArp) SetArpPitch(voct units.VOct) {
+	m.arpPitch = voct
+}
+
+func (m *ComplexArp) ArpPitch() units.VOct {
+	return m.arpPitch
+}
+
+func (m *ComplexArp) SetArpRange(voct units.VOct) {
+	m.arpRange = voct
+}
+
+func (m *ComplexArp) ArpRange() units.VOct {
+	return m.arpRange
 }
 
 func (m *ComplexArp) Tick(deltaTime time.Duration) {

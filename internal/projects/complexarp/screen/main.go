@@ -27,10 +27,6 @@ func (m *Main) Button1Ex(e *europi.EuroPi, p machine.Pin, high bool) {
 
 func (m *Main) Paint(e *europi.EuroPi, deltaTime time.Duration) {
 	disp := e.Display
-	disp.WriteLine(
-		fmt.Sprintf("Scl:%s Rng:%s",
-			module.ScaleToString(m.ComplexArp.Scale()),
-			module.RangeToString(m.ComplexArp.ArpRange())),
-		0, line1y)
-	disp.WriteLine(fmt.Sprintf("1:%2.1f", e.CV1.Voltage()), 0, line2y)
+	disp.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f 3:%2.1f", e.CV1.Voltage(), e.CV2.Voltage(), e.CV3.Voltage()), 0, line1y)
+	disp.WriteLine(fmt.Sprintf("4:%2.1f 5:%2.1f 6:%2.1f", e.CV4.Voltage(), e.CV5.Voltage(), e.CV6.Voltage()), 0, line2y)
 }
