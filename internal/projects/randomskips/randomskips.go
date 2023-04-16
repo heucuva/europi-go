@@ -43,7 +43,7 @@ func makeGate(out output.Output) func(high bool) {
 func startLoop(e *europi.EuroPi) {
 	if err := skip.Init(module.Config{
 		Gate:   makeGate(e.CV1),
-		Chance: 2.0 / 3.0,
+		Chance: 0.5,
 	}); err != nil {
 		panic(err)
 	}

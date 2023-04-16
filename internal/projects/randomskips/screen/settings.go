@@ -11,12 +11,12 @@ import (
 )
 
 type Settings struct {
-	RandomSkips *module.RandomSkips
 	km          *knobmenu.KnobMenu
+	RandomSkips *module.RandomSkips
 }
 
 func (m *Settings) chanceString() string {
-	return module.ChanceToString(m.RandomSkips.Chance())
+	return module.ChanceString(m.RandomSkips.Chance())
 }
 
 func (m *Settings) chanceValue() units.CV {
