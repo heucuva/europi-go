@@ -1,4 +1,4 @@
-# Cascade LFO
+# Cascading LFO
 
 A cascading LFO generator based on YouTube video observations made about the operation of the Instruo Ochd module.
 
