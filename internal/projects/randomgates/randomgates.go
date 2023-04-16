@@ -23,11 +23,7 @@ var (
 		Clock:       &clock,
 	}
 	screenClock = clockScreen.Settings{
-		Clock:           &clock,
-		MinBPM:          0.01,
-		MaxBPM:          240.0,
-		MinGateDuration: time.Millisecond * 1,
-		MaxGateDuration: time.Millisecond * 990,
+		Clock: &clock,
 	}
 	screenSettings = screen.Settings{
 		RandomGates: &trig,
@@ -56,7 +52,7 @@ func startLoop(e *europi.EuroPi) {
 			makeGate(e.CV5), // Gate 2
 			makeGate(e.CV6), // Gate 3
 		},
-		Mode: module.Mode200msTrig,
+		Mode: module.Mode1msTrig,
 	}); err != nil {
 		panic(err)
 	}

@@ -33,3 +33,20 @@ func (m Mode) GetTriggerDuration(input time.Duration) time.Duration {
 		panic("unsupported mode")
 	}
 }
+
+func (m Mode) String() string {
+	switch m {
+	case Mode1msTrig:
+		return "1ms"
+	case Mode200msTrig:
+		return "200ms"
+	case ModeQuarterGateTrig:
+		return "1/4"
+	case ModeHalfGateTrig:
+		return "1/2"
+	case ModeEqualGateTrig:
+		return "1:1"
+	default:
+		return ""
+	}
+}

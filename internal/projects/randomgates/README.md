@@ -39,7 +39,7 @@ While Random Gates is operating, you can toggle between using the external clock
 #### Random Gates Configuration
 
 By default, the settings of Random Gates are:
-- Mode: 200ms
+- Mode: 1ms
 
 Modes are as follows:
 - 1ms: Triggers will last a fixed 1ms

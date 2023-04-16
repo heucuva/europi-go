@@ -11,12 +11,12 @@ import (
 )
 
 type Settings struct {
-	RandomGates *module.RandomGates
 	km          *knobmenu.KnobMenu
+	RandomGates *module.RandomGates
 }
 
 func (m *Settings) modeString() string {
-	return module.ModeToString(m.RandomGates.Mode())
+	return module.ModeString(m.RandomGates.Mode())
 }
 
 func (m *Settings) modeValue() units.CV {
