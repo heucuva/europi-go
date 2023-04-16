@@ -8,22 +8,23 @@ import (
 )
 
 type envelope struct {
-	model model
+	model  model
+	config EnvelopeConfig
 }
 
-func noop(_ units.BipolarCV) {
+func noopOut(cv units.CV) {
 }
 
 func (e *envelope) Init(config EnvelopeConfig) error {
 	out := config.Out
 	if out == nil {
-		out = noop
+		out = noopOut
 	}
+
+	e.config = config
 
 	switch config.Mode {
 	case EnvelopeModeAD:
-		attackDur := time.Duration(float32(time.Second) * config.Attack.ToFloat32())
-		decayDur := time.Duration(float32(time.Second) * config.Decay.ToFloat32())
 		amode, err := e.getFunctionMode(config.AttackMode)
 		if err != nil {
 			return fmt.Errorf("attack: %w", err)
@@ -33,13 +34,13 @@ func (e *envelope) Init(config EnvelopeConfig) error {
 			return fmt.Errorf("decay: %w", err)
 		}
 		e.model = &modelAD{
-			out:       out,
-			atten:     1.0,
-			attack:    amode,
-			attackDur: attackDur,
-			decay:     dmode,
-			decayDur:  decayDur,
+			out:    out,
+			atten:  1.0,
+			attack: amode,
+			decay:  dmode,
 		}
+		e.model.SetAttack(config.Attack)
+		e.model.SetDecay(config.Decay)
 
 	default:
 		return fmt.Errorf("unhandled mode: %q", config.Mode)
@@ -49,6 +50,16 @@ func (e *envelope) Init(config EnvelopeConfig) error {
 
 func (e *envelope) SetCV(cv units.BipolarCV) {
 	e.model.SetCV(cv)
+}
+
+func (e *envelope) SetAttack(cv units.CV) {
+	e.config.Attack = cv
+	e.model.SetAttack(cv)
+}
+
+func (e *envelope) SetDecay(cv units.CV) {
+	e.config.Decay = cv
+	e.model.SetDecay(cv)
 }
 
 func (e *envelope) Trigger() {

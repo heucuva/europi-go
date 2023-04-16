@@ -12,7 +12,6 @@ import (
 	randomgates "github.com/heucuva/europi/internal/projects/randomgates/module"
 	randomskips "github.com/heucuva/europi/internal/projects/randomskips/module"
 	threephaselfo "github.com/heucuva/europi/internal/projects/threephaselfo/module"
-	europim "github.com/heucuva/europi/math"
 	"github.com/heucuva/europi/units"
 )
 
@@ -31,12 +30,6 @@ type UnfoldableSpace struct {
 	onSkipSetCV1      func(cv units.CV)
 	onSkipOutputGate1 func(high bool)
 	onLFOOutput5      func(cv units.BipolarCV)
-}
-
-func clampToCV(fn func(units.CV)) func(cv units.BipolarCV) {
-	return func(cv units.BipolarCV) {
-		fn(europim.Clamp(units.CV(cv.ToFloat32()), 0.0, 1.0))
-	}
 }
 
 func (m *UnfoldableSpace) Init(config Config) error {
@@ -111,7 +104,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	if err := m.ModEnv.Init(complexenvelope.Config{
 		Env: [2]complexenvelope.EnvelopeConfig{
 			{ // 1
-				Out:         clampToCV(config.SetLevel),
+				Out:         config.SetLevel,
 				Mode:        complexenvelope.EnvelopeModeAD,
 				AttackMode:  complexenvelope.FunctionModeLinear,
 				ReleaseMode: complexenvelope.FunctionModeExponential,
@@ -119,9 +112,10 @@ func (m *UnfoldableSpace) Init(config Config) error {
 				Decay:       0.6666666666666667,
 			},
 			{ // 2
-				Out: func(cv units.BipolarCV) {
-					config.SetLFOCV(cv)
-					m.ModLFO.SetCV(cv)
+				Out: func(cv units.CV) {
+					bcv := cv.ToBipolarCV()
+					config.SetLFOCV(bcv)
+					m.ModLFO.SetCV(bcv)
 				},
 				Mode:        complexenvelope.EnvelopeModeAD,
 				AttackMode:  complexenvelope.FunctionModeLinear,

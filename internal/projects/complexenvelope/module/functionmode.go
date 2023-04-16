@@ -31,3 +31,16 @@ func (e envelope) getFunctionMode(mode FunctionMode) (functionMode, error) {
 		return nil, fmt.Errorf("unhandled function mode: %q", mode)
 	}
 }
+
+func (f FunctionMode) String() string {
+	switch f {
+	case FunctionModeLinear:
+		return "Lin"
+	case FunctionModeExponential:
+		return "Exp"
+	case FunctionModeQuartic:
+		return "Qrt"
+	default:
+		return "unk"
+	}
+}

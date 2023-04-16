@@ -1,16 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"machine"
 	"time"
 
 	"github.com/heucuva/europi"
+	"github.com/heucuva/europi/experimental/screenbank"
 	"github.com/heucuva/europi/internal/projects/complexenvelope/module"
+	"github.com/heucuva/europi/internal/projects/complexenvelope/screen"
 )
 
 var (
-	env module.ComplexEnvelope
+	env        module.ComplexEnvelope
+	ui         *screenbank.ScreenBank
+	screenMain = screen.Main{
+		Env: &env,
+	}
+	screenSettings = screen.Settings{
+		Env: &env,
+	}
 )
 
 func startLoop(e *europi.EuroPi) {
@@ -21,8 +29,8 @@ func startLoop(e *europi.EuroPi) {
 				Mode:        module.EnvelopeModeAD,
 				AttackMode:  module.FunctionModeLinear,
 				ReleaseMode: module.FunctionModeExponential,
-				Attack:      0.6666666666666667,
-				Decay:       0.6666666666666667,
+				Attack:      0.5,
+				Decay:       0.5,
 			},
 			{ // 2
 				Out:         e.CV2.SetCV,
@@ -43,44 +51,22 @@ func startLoop(e *europi.EuroPi) {
 		env.Gate(1, high)
 	})
 
-	e.B1.HandlerExWithDebounce(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
-		high := e.B1.Value()
-		env.Gate(0, high)
-	}, time.Millisecond*500)
-
-	e.B2.HandlerExWithDebounce(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
-		high := e.B2.Value()
-		env.Gate(1, high)
-	}, time.Millisecond*500)
 }
 
-var (
-	displayDelay time.Duration
-)
-
-const (
-	displayRate       = time.Millisecond * 150
-	line1y      int16 = 11
-	line2y      int16 = 23
-)
-
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	env.SetCV(0, e.K1.ReadCV())
-	env.SetCV(1, e.K2.ReadCV())
 	env.Tick(deltaTime)
-
-	displayDelay += deltaTime
-	if displayDelay > displayRate {
-		displayDelay %= displayRate
-
-		disp := e.Display
-		disp.ClearBuffer()
-		disp.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f", e.CV1.Voltage(), e.CV2.Voltage()), 0, line1y)
-		disp.Display()
-	}
 }
 
 func main() {
+	var err error
+	ui, err = screenbank.NewScreenBank(
+		screenbank.WithScreen("main", "\u2b50", &screenMain),
+		screenbank.WithScreen("settings", "\u2611", &screenSettings),
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	// some options shown below are being explicitly set to their defaults
 	// only to showcase their existence.
 	europi.Bootstrap(
@@ -89,5 +75,7 @@ func main() {
 		europi.StartLoop(startLoop),
 		europi.MainLoop(mainLoop),
 		europi.MainLoopInterval(time.Millisecond*1),
+		europi.UI(ui),
+		europi.UIRefreshRate(time.Millisecond*50),
 	)
 }

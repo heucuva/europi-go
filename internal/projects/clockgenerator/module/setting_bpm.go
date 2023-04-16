@@ -21,5 +21,5 @@ func BPMToCV(bpm float32) units.CV {
 }
 
 func CVToBPM(cv units.CV) float32 {
-	return europim.Lerp(cv.ToFloat32(), MinBPM, MaxBPM)
+	return europim.LerpRound(cv.ToFloat32(), MinBPM, MaxBPM)
 }

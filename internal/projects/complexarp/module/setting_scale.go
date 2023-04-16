@@ -37,5 +37,5 @@ func ScaleToCV(s Scale) units.CV {
 }
 
 func CVToScale(cv units.CV) Scale {
-	return europim.Lerp(cv.ToFloat32(), ScaleC_Lydian, ScaleC_Augmented)
+	return europim.LerpRound(cv.ToFloat32(), ScaleC_Lydian, ScaleC_Augmented)
 }

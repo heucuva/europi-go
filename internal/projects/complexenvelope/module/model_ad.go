@@ -8,7 +8,7 @@ import (
 )
 
 type modelAD struct {
-	out       func(cv units.BipolarCV)
+	out       func(cv units.CV)
 	attack    functionMode
 	attackDur time.Duration
 	decay     functionMode
@@ -27,12 +27,21 @@ func (m *modelAD) SetCV(cv units.BipolarCV) {
 	m.atten = cv
 }
 
+func (m *modelAD) SetAttack(cv units.CV) {
+	m.attackDur = time.Duration(float32(time.Second) * cv.ToFloat32())
+}
+
+func (m *modelAD) SetDecay(cv units.CV) {
+	m.decayDur = time.Duration(float32(time.Second) * cv.ToFloat32())
+}
+
 func (m *modelAD) Tick(deltaTime time.Duration) {
 	switch m.state {
 	case stateAttack:
 		t := m.stateTime + deltaTime
 		maxTime := time.Duration(float32(m.attackDur) * float32(m.atten))
-		cv := europim.Clamp(m.attack.Calc(t, maxTime), 0.0, 1.0)
+		bcv := m.attack.Calc(t, maxTime)
+		cv := europim.Clamp(units.CV(bcv.ToFloat32()), 0.0, 1.0)
 		if t >= maxTime {
 			m.state = stateDecay
 			t = 0
@@ -48,7 +57,8 @@ func (m *modelAD) Tick(deltaTime time.Duration) {
 			m.out(0)
 			return
 		}
-		cv := europim.Clamp(m.decay.Calc(t, m.decayDur), 0.0, 1.0)
+		bcv := m.attack.Calc(t, m.decayDur)
+		cv := europim.Clamp(units.CV(bcv.ToFloat32()), 0.0, 1.0)
 		m.stateTime = t
 		m.out(cv)
 

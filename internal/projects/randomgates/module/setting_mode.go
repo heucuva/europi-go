@@ -6,7 +6,7 @@ import (
 )
 
 func CVToMode(cv units.CV) Mode {
-	return europim.Lerp(cv.ToFloat32(), Mode1msTrig, ModeEqualGateTrig)
+	return europim.LerpRound(cv.ToFloat32(), Mode1msTrig, ModeEqualGateTrig)
 }
 
 func ModeToCV(mode Mode) units.CV {

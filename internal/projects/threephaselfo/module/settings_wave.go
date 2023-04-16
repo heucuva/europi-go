@@ -8,7 +8,7 @@ import (
 )
 
 func CVToWaveMode(cv units.CV) WaveMode {
-	return europim.Lerp(cv.ToFloat32(), WaveModeSine, WaveModeSine)
+	return europim.LerpRound(cv.ToFloat32(), WaveModeSine, WaveModeSine)
 }
 
 func WaveModeToCV(wavemode WaveMode) units.CV {
