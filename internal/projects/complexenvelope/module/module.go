@@ -37,6 +37,11 @@ func (m *ComplexEnvelope) SetMode(env int, mode EnvelopeMode) {
 	}
 
 	e := &m.env[env]
+	if e.config.Mode == mode {
+		// no change
+		return
+	}
+
 	cfg := e.config
 	cfg.Mode = mode
 	if err := e.Init(cfg); err != nil {
@@ -55,7 +60,13 @@ func (m *ComplexEnvelope) SetAttackMode(env int, mode FunctionMode) {
 	if env < 0 || env >= len(m.env) {
 		panic("env: out of range")
 	}
+
 	e := &m.env[env]
+	if e.config.AttackMode == mode {
+		// no change
+		return
+	}
+
 	cfg := e.config
 	cfg.AttackMode = mode
 	if err := e.Init(cfg); err != nil {
@@ -74,7 +85,13 @@ func (m *ComplexEnvelope) SetReleaseMode(env int, mode FunctionMode) {
 	if env < 0 || env >= len(m.env) {
 		panic("env: out of range")
 	}
+
 	e := &m.env[env]
+	if e.config.ReleaseMode == mode {
+		// no change
+		return
+	}
+
 	cfg := e.config
 	cfg.ReleaseMode = mode
 	if err := e.Init(cfg); err != nil {

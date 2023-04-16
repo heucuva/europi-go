@@ -9,6 +9,7 @@ import (
 	lfoScreen "github.com/heucuva/europi/internal/projects/cascadelfo/screen"
 	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
 	arpScreen "github.com/heucuva/europi/internal/projects/complexarp/screen"
+	envScreen "github.com/heucuva/europi/internal/projects/complexenvelope/screen"
 	trigScreen "github.com/heucuva/europi/internal/projects/randomgates/screen"
 	skipScreen "github.com/heucuva/europi/internal/projects/randomskips/screen"
 	modScreen "github.com/heucuva/europi/internal/projects/threephaselfo/screen"
@@ -40,6 +41,9 @@ var (
 	}
 	screenLFO = lfoScreen.Settings{
 		LFO: &unfold.ModLFO,
+	}
+	screenEnv = envScreen.Settings{
+		Env: &unfold.ModEnv,
 	}
 )
 
@@ -94,6 +98,7 @@ func main() {
 		screenbank.WithScreen("skip", "\u2702", &screenSkip),
 		screenbank.WithScreen("arp", "\u26bd", &screenArp),
 		screenbank.WithScreen("lfo", "\u2797", &screenLFO),
+		screenbank.WithScreen("env", "\u2709", &screenEnv),
 	)
 	if err != nil {
 		panic(err)

@@ -82,6 +82,7 @@ The order of the displays is:
 - Random Skips configuration
 - Complex Arpeggiator configuration
 - Cascading LFO configuration
+- Complex Envelope configuration
 
 #### Main Display
 
@@ -154,6 +155,20 @@ By default, the settings of Cascading LFO are:
 - Rate: 39.4Hz
 
 When on the Cascading LFO Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+#### Complex Envelope Configuration
+
+By default, the settings of Complex Envelope are:
+
+- Mode: AD
+- AttackMode: Quartic
+- ReleaseMode: Exponential
+- Attack: +127
+- Decay: +127
+
+When on the Complex Envelope Configuration screen, pressing Button 1 on the EuroPi will cycle through the configuration items. The currently selected item for edit will be identified by an asterisk (`*`) character and it may be updated by turning Knob 1 of the EuroPi. Updates are applied immediately.
+
+The current envelope being displayed/edited will be shown in the upper-right corner of the screen and may be cycled through by briefly pressing Button 2 on the EuroPi.
 
 ## Internal *'Module'* Configuration
 
