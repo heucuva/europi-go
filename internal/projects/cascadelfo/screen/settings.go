@@ -16,7 +16,7 @@ type Settings struct {
 }
 
 func (m *Settings) rateString() string {
-	return module.RateToString(m.LFO.Rate())
+	return module.RateString(m.LFO.Rate())
 }
 
 func (m *Settings) rateValue() units.CV {
@@ -28,7 +28,7 @@ func (m *Settings) setRateValue(value units.CV) {
 }
 
 func (m *Settings) rateAttenuverterString() string {
-	return module.RateAttenuverterToString(m.LFO.RateAttenuverter())
+	return module.RateAttenuverterString(m.LFO.RateAttenuverter())
 }
 
 func (m *Settings) rateAttenuverterValue() units.CV {
