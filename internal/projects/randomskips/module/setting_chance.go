@@ -8,7 +8,7 @@ import (
 )
 
 func ChanceString(chance float32) string {
-	return fmt.Sprintf("%3.1f%%", chance)
+	return fmt.Sprintf("%3.1f%%", chance*100.0)
 }
 
 func ChanceToCV(chance float32) units.CV {
