@@ -64,6 +64,10 @@ func (m *Settings) Start(e *europi.EuroPi) {
 	m.km = km
 }
 
+func (m *Settings) Button1Debounce() time.Duration {
+	return time.Millisecond * 200
+}
+
 func (m *Settings) Button1(e *europi.EuroPi, p machine.Pin) {
 	m.km.Next()
 }

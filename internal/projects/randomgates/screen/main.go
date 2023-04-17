@@ -24,6 +24,10 @@ const (
 func (m *Main) Start(e *europi.EuroPi) {
 }
 
+func (m *Main) Button1Debounce() time.Duration {
+	return time.Millisecond * 200
+}
+
 func (m *Main) Button1(e *europi.EuroPi, p machine.Pin) {
 	m.Clock.Toggle()
 }

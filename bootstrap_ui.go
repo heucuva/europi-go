@@ -18,6 +18,10 @@ type UserInterfaceButton1 interface {
 	Button1(e *EuroPi, p machine.Pin)
 }
 
+type UserInterfaceButton1Debounce interface {
+	Button1Debounce() time.Duration
+}
+
 type UserInterfaceButton1Ex interface {
 	Button1Ex(e *EuroPi, p machine.Pin, high bool)
 }
@@ -28,6 +32,10 @@ type UserInterfaceButton1Long interface {
 
 type UserInterfaceButton2 interface {
 	Button2(e *EuroPi, p machine.Pin)
+}
+
+type UserInterfaceButton2Debounce interface {
+	Button2Debounce() time.Duration
 }
 
 type UserInterfaceButton2Ex interface {
@@ -57,8 +65,15 @@ func enableUI(e *EuroPi, screen UserInterface, interval time.Duration) {
 		inputB1L func(e *EuroPi, p machine.Pin)
 	)
 	if in, ok := screen.(UserInterfaceButton1); ok {
+		var debounceDelay time.Duration
+		if db, ok := screen.(UserInterfaceButton1Debounce); ok {
+			debounceDelay = db.Button1Debounce()
+		}
+		var lastTrigger time.Time
 		inputB1 = func(e *EuroPi, p machine.Pin, high bool) {
-			if !high {
+			now := time.Now()
+			if !high && (debounceDelay == 0 || now.Sub(lastTrigger) >= debounceDelay) {
+				lastTrigger = now
 				in.Button1(e, p)
 			}
 		}
@@ -75,8 +90,15 @@ func enableUI(e *EuroPi, screen UserInterface, interval time.Duration) {
 		inputB2L func(e *EuroPi, p machine.Pin)
 	)
 	if in, ok := screen.(UserInterfaceButton2); ok {
+		var debounceDelay time.Duration
+		if db, ok := screen.(UserInterfaceButton2Debounce); ok {
+			debounceDelay = db.Button2Debounce()
+		}
+		var lastTrigger time.Time
 		inputB2 = func(e *EuroPi, p machine.Pin, high bool) {
-			if !high {
+			now := time.Now()
+			if !high && (debounceDelay == 0 || now.Sub(lastTrigger) >= debounceDelay) {
+				lastTrigger = now
 				in.Button2(e, p)
 			}
 		}
