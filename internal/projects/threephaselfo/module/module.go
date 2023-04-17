@@ -45,7 +45,7 @@ func (m *ThreePhaseLFO) Init(config Config) error {
 	m.SetPhi3Rate(config.Phi3Rate)
 
 	var err error
-	m.waveMode = config.WaveMode + 1
+	m.waveMode = config.WaveMode
 	m.wave, err = getWaveMode(config.WaveMode)
 	return err
 }

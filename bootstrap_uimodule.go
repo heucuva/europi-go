@@ -59,7 +59,7 @@ func (u *uiModule) run(e *EuroPi, interval time.Duration) {
 	}
 }
 
-func (u *uiModule) setupButton(e *EuroPi, r input.DigitalReader, onShort func(e *EuroPi, p machine.Pin, high bool), onLong func(e *EuroPi, p machine.Pin)) {
+func (u *uiModule) setupButton(e *EuroPi, btn input.DigitalReader, onShort func(e *EuroPi, p machine.Pin, high bool), onLong func(e *EuroPi, p machine.Pin)) {
 	if onShort == nil && onLong == nil {
 		return
 	}
@@ -78,12 +78,12 @@ func (u *uiModule) setupButton(e *EuroPi, r input.DigitalReader, onShort func(e 
 
 	const longDuration = time.Millisecond * 650
 
-	r.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
-		high := r.Value()
-		if !high {
+	btn.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
+		high := btn.Value()
+		if high {
 			onShort(e, p, high)
 		} else {
-			startDown := r.LastChange()
+			startDown := btn.LastChange()
 			deltaTime := time.Since(startDown)
 			if deltaTime < longDuration {
 				onShort(e, p, high)

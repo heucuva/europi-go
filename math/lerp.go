@@ -11,7 +11,8 @@ func Lerp[V Lerpable](t float32, low, high V) V {
 }
 
 func LerpRound[V Lerpable](t float32, low, high V) V {
-	return V(math.Round(float64(t)*float64(high-low))) + low
+	l := math.Round(float64(t) * float64(high-low))
+	return Clamp(V(l)+low, low, high)
 }
 
 func InverseLerp[V Lerpable](v, low, high V) float32 {
