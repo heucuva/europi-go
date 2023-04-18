@@ -10,6 +10,8 @@ type Config struct {
 	SetMorph  func(cv units.BipolarCV)
 	SetLFOCV  func(cv units.BipolarCV)
 
+	VOctInputEnabled bool
+
 	OnClock           func(high bool)
 	OnTrigOuputGate1  func(high bool)
 	OnSkipSetCV1      func(cv units.CV)

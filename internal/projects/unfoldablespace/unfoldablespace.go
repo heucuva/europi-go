@@ -72,12 +72,13 @@ func startLoop(e *europi.EuroPi) {
 	}
 
 	if err := unfold.Init(module.Config{
-		SetVOct:   setVOct,
-		SetLevel:  setLevel,
-		SetTimbre: setTimbre,
-		SetHarmo:  setHarmo,
-		SetMorph:  setMorph,
-		SetLFOCV:  setLFOCV,
+		SetVOct:          setVOct,
+		SetLevel:         setLevel,
+		SetTimbre:        setTimbre,
+		SetHarmo:         setHarmo,
+		SetMorph:         setMorph,
+		SetLFOCV:         setLFOCV,
+		VOctInputEnabled: false,
 	}); err != nil {
 		panic(err)
 	}
@@ -89,6 +90,7 @@ func startLoop(e *europi.EuroPi) {
 }
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
+	unfold.SetVOct(e.AI.ReadVOct())
 	unfold.Tick(deltaTime)
 }
 

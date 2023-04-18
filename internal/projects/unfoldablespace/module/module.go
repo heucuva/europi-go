@@ -25,6 +25,8 @@ type UnfoldableSpace struct {
 	ModMod   threephaselfo.ThreePhaseLFO
 	ModRnd   complexrandom.ComplexRandom
 
+	voctInputEnabled bool
+
 	onClock           func(high bool)
 	onTrigOutputGate1 func(high bool)
 	onSkipSetCV1      func(cv units.CV)
@@ -38,6 +40,8 @@ func (m *UnfoldableSpace) Init(config Config) error {
 	m.onSkipSetCV1 = config.OnSkipSetCV1
 	m.onSkipOutputGate1 = config.OnSkipOutputGate1
 	m.onLFOOutput5 = config.OnLFOOutput5
+
+	m.voctInputEnabled = config.VOctInputEnabled
 
 	if err := m.ModClock.Init(clockgenerator.Config{
 		BPM:      120.0,
@@ -156,12 +160,26 @@ func (m *UnfoldableSpace) EnableInternalClock(enabled bool) {
 	m.ModClock.SetEnabled(enabled)
 }
 
+func (m *UnfoldableSpace) ToggleInternalClock() {
+	m.ModClock.Toggle()
+}
+
 func (m *UnfoldableSpace) InternalClockEnabled() bool {
 	return m.ModClock.Enabled()
 }
 
-func (m *UnfoldableSpace) ToggleInternalClock() {
-	m.ModClock.Toggle()
+func (m *UnfoldableSpace) ToggleVOctInputEnabled() {
+	m.voctInputEnabled = !m.voctInputEnabled
+}
+
+func (m *UnfoldableSpace) VOctInputEnabled() bool {
+	return m.voctInputEnabled
+}
+
+func (m *UnfoldableSpace) SetVOct(voct units.VOct) {
+	if m.voctInputEnabled {
+		m.ModArp.SetArpPitch(voct)
+	}
 }
 
 func (m *UnfoldableSpace) Tick(deltaTime time.Duration) {

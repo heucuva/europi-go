@@ -13,6 +13,7 @@ Some additional modules down-chain from Plaits and Belgrad are necessary.
 ### Inputs
 
 - Digital Input = clock input
+- Analogue Input = complex arpeggiator center note input (optional)
 
 In Un-folding Space, a clock rate of 120 BPM is suggested, though any rate can be supplied. This clock drives the trigger and skipper systems, which ultimately drive the envelope and arpeggiator circuits, which generate the final values sent to the output jacks on the EuroPi.
 
@@ -90,6 +91,8 @@ The order of the displays is:
 The main display shows the voltages of the CV outputs on the EuroPi as well as the enabled status of the internal performance clock.
 
 While Unfoldable Space is operating, you can toggle between using the external clock (default mode at startup) and the internal clock by pressing Button 1 on the EuroPi while on the main screen. When the internal clock mode is active, you will be informed by seeing a small bar ( `_` ) in the upper-left corner of the display.
+
+Additionally, you can toggle setting the central pitch of the Complex Arpeggiator via the Analogue Input jack of the EuroPi by briefly pressing Button 1 on the EuroPi while on the main screen. When the pitch override mode is active, you will be informed by seeing a small bar ( `_` ) in the upper-right corner of the display.
 
 #### Performance Clock Configuration
 
