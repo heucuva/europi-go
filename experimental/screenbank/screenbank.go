@@ -40,20 +40,35 @@ func (sb *ScreenBank) Current() europi.UserInterface {
 	return sb.bank[sb.current].screen
 }
 
-func (sb *ScreenBank) Next() {
-	if len(sb.bank) == 0 {
-		sb.current = 0
+func (sb *ScreenBank) transitionTo(idx int) {
+	if sb.current >= len(sb.bank) || len(sb.bank) == 0 {
 		return
 	}
 
-	cur := &sb.bank[sb.current]
+	cur := sb.bank[sb.current]
 	cur.lock()
-
-	sb.current++
+	sb.current = idx
 	if sb.current >= len(sb.bank) {
 		sb.current = 0
 	}
 	sb.bank[sb.current].unlock()
+}
+
+func (sb *ScreenBank) Goto(idx int) {
+	sb.transitionTo(idx)
+}
+
+func (sb *ScreenBank) GotoNamed(name string) {
+	for i, screen := range sb.bank {
+		if screen.name == name {
+			sb.transitionTo(i)
+			return
+		}
+	}
+}
+
+func (sb *ScreenBank) Next() {
+	sb.transitionTo(sb.current + 1)
 }
 
 func (sb *ScreenBank) Start(e *europi.EuroPi) {
@@ -68,6 +83,10 @@ func (sb *ScreenBank) Start(e *europi.EuroPi) {
 }
 
 func (sb *ScreenBank) PaintLogo(e *europi.EuroPi, deltaTime time.Duration) {
+	if sb.current >= len(sb.bank) {
+		return
+	}
+
 	cur := &sb.bank[sb.current]
 	cur.lock()
 	if cur.logo != "" {
@@ -77,6 +96,10 @@ func (sb *ScreenBank) PaintLogo(e *europi.EuroPi, deltaTime time.Duration) {
 }
 
 func (sb *ScreenBank) Paint(e *europi.EuroPi, deltaTime time.Duration) {
+	if sb.current >= len(sb.bank) {
+		return
+	}
+
 	cur := &sb.bank[sb.current]
 	cur.lock()
 	now := time.Now()
