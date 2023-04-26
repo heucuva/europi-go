@@ -73,10 +73,20 @@ func (a *analoginput) Percent() float32 {
 	return a.cal.InverseLerp(a.adc.Get(a.samples))
 }
 
+func (a *analoginput) BipolarPercent() float32 {
+	// TODO: make this actually work on Bipolar data
+	return a.Percent()*2.0 - 1.0
+}
+
 // ReadVoltage returns the current read voltage between 0.0 and 10.0 volts.
 func (a *analoginput) ReadVoltage() float32 {
 	// NOTE: if MinInputVoltage ever becomes non-zero, then we need to use a lerp instead
 	return a.Percent() * MaxInputVoltage
+}
+
+func (a *analoginput) ReadBipolarVoltage() float32 {
+	// NOTE: if MinInputVoltage ever becomes non-zero, then we need to use a lerp instead
+	return a.BipolarPercent() * MaxInputVoltage
 }
 
 // ReadCV returns the current read voltage as a CV value.
@@ -85,6 +95,14 @@ func (a *analoginput) ReadCV() units.CV {
 	// just clamp it
 	v := a.ReadVoltage()
 	return clamp.Clamp(units.CV(v/5.0), 0.0, 1.0)
+}
+
+// ReadBipolarCV returns the current read voltage as a BipolarCV value.
+func (a *analoginput) ReadBipolarCV() units.BipolarCV {
+	// we can't use a.BipolarPercent() here, because we might get over 5.0 volts or under -5.0 volts input
+	// just clamp it
+	v := a.ReadBipolarVoltage()
+	return clamp.Clamp(units.BipolarCV(v/5.0), -1.0, 1.0)
 }
 
 // ReadCV returns the current read voltage as a V/Octave value.

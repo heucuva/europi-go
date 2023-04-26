@@ -7,6 +7,7 @@ type AnalogInput interface {
 	Percent() float32
 	ReadVoltage() float32
 	ReadCV() units.CV
+	ReadBipolarCV() units.BipolarCV
 	ReadVOct() units.VOct
 	MinVoltage() float32
 	MaxVoltage() float32
