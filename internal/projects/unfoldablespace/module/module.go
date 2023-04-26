@@ -3,16 +3,16 @@ package module
 import (
 	"time"
 
-	"github.com/heucuva/europi/experimental/quantizer"
-	cascadelfo "github.com/heucuva/europi/internal/projects/cascadelfo/module"
-	clockgenerator "github.com/heucuva/europi/internal/projects/clockgenerator/module"
-	complexarp "github.com/heucuva/europi/internal/projects/complexarp/module"
-	complexenvelope "github.com/heucuva/europi/internal/projects/complexenvelope/module"
-	complexrandom "github.com/heucuva/europi/internal/projects/complexrandom/module"
-	randomgates "github.com/heucuva/europi/internal/projects/randomgates/module"
-	randomskips "github.com/heucuva/europi/internal/projects/randomskips/module"
-	threephaselfo "github.com/heucuva/europi/internal/projects/threephaselfo/module"
-	"github.com/heucuva/europi/units"
+	cascadelfo "github.com/awonak/EuroPiGo/internal/projects/cascadelfo/module"
+	clockgenerator "github.com/awonak/EuroPiGo/internal/projects/clockgenerator/module"
+	complexarp "github.com/awonak/EuroPiGo/internal/projects/complexarp/module"
+	complexenvelope "github.com/awonak/EuroPiGo/internal/projects/complexenvelope/module"
+	complexrandom "github.com/awonak/EuroPiGo/internal/projects/complexrandom/module"
+	randomgates "github.com/awonak/EuroPiGo/internal/projects/randomgates/module"
+	randomskips "github.com/awonak/EuroPiGo/internal/projects/randomskips/module"
+	threephaselfo "github.com/awonak/EuroPiGo/internal/projects/threephaselfo/module"
+	"github.com/awonak/EuroPiGo/quantizer"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type UnfoldableSpace struct {
@@ -66,7 +66,8 @@ func (m *UnfoldableSpace) Init(config Config) error {
 		SkewRate:  threephaselfo.CVToSkewRate(0.0),
 		SkewShape: 0.05,
 		Degree0: func(cv units.BipolarCV) {
-			m.skipSetCV1(cv.ToCV())
+			v, _ := cv.ToCV()
+			m.skipSetCV1(v)
 		},
 	}); err != nil {
 		return err
@@ -119,7 +120,7 @@ func (m *UnfoldableSpace) Init(config Config) error {
 			},
 			{ // 2
 				Out: func(cv units.CV) {
-					bcv := cv.ToBipolarCV()
+					bcv := cv.ToBipolarCV(1)
 					config.SetLFOCV(bcv)
 					m.ModLFO.SetCV(bcv)
 				},

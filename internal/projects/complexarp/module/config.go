@@ -1,8 +1,8 @@
 package module
 
 import (
-	"github.com/heucuva/europi/experimental/quantizer"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/quantizer"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type Config struct {

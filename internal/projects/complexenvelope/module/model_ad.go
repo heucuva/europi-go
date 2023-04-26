@@ -3,8 +3,8 @@ package module
 import (
 	"time"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/clamp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type modelAD struct {
@@ -41,7 +41,7 @@ func (m *modelAD) Tick(deltaTime time.Duration) {
 		t := m.stateTime + deltaTime
 		maxTime := time.Duration(float32(m.attackDur) * float32(m.atten))
 		bcv := m.attack.Calc(t, maxTime)
-		cv := europim.Clamp(units.CV(bcv.ToFloat32()), 0.0, 1.0)
+		cv := clamp.Clamp(units.CV(bcv.ToFloat32()), 0.0, 1.0)
 		if t >= maxTime {
 			m.state = stateDecay
 			t = 0
@@ -58,7 +58,7 @@ func (m *modelAD) Tick(deltaTime time.Duration) {
 			return
 		}
 		bcv := m.attack.Calc(t, m.decayDur)
-		cv := europim.Clamp(units.CV(bcv.ToFloat32()), 0.0, 1.0)
+		cv := clamp.Clamp(units.CV(bcv.ToFloat32()), 0.0, 1.0)
 		m.stateTime = t
 		m.out(cv)
 

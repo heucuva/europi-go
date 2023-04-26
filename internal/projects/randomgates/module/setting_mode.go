@@ -1,18 +1,20 @@
 package module
 
 import (
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 func ModeString(mode Mode) string {
 	return mode.String()
 }
 
+var modeLerp = lerp.NewLerp32(Mode1msTrig, ModeEqualGateTrig)
+
 func ModeToCV(mode Mode) units.CV {
-	return units.CV(europim.InverseLerp(mode, Mode1msTrig, ModeEqualGateTrig))
+	return units.CV(modeLerp.ClampedInverseLerp(mode))
 }
 
 func CVToMode(cv units.CV) Mode {
-	return europim.LerpRound(cv.ToFloat32(), Mode1msTrig, ModeEqualGateTrig)
+	return modeLerp.ClampedLerpRound(cv.ToFloat32())
 }

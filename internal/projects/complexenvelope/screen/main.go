@@ -2,15 +2,18 @@ package screen
 
 import (
 	"fmt"
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/internal/projects/complexenvelope/module"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/draw"
+	"github.com/awonak/EuroPiGo/experimental/fontwriter"
+	"github.com/awonak/EuroPiGo/internal/projects/complexenvelope/module"
+	"tinygo.org/x/tinyfont/proggy"
 )
 
 type Main struct {
 	Env *module.ComplexEnvelope
+	w   fontwriter.Writer
 }
 
 const (
@@ -19,18 +22,19 @@ const (
 )
 
 func (m *Main) Start(e *europi.EuroPi) {
+	m.w.Display = e.Display
+	m.w.Font = &proggy.TinySZ8pt7b
 }
 
-func (m *Main) Button1Ex(e *europi.EuroPi, p machine.Pin, high bool) {
-	m.Env.Gate(0, high)
+func (m *Main) Button1Ex(e *europi.EuroPi, value bool, _ time.Duration) {
+	m.Env.Gate(0, value)
 }
 
-func (m *Main) Button2Ex(e *europi.EuroPi, p machine.Pin, high bool) {
-	m.Env.Gate(1, high)
+func (m *Main) Button2Ex(e *europi.EuroPi, value bool, _ time.Duration) {
+	m.Env.Gate(1, value)
 }
 
 func (m *Main) Paint(e *europi.EuroPi, deltaTime time.Duration) {
-	disp := e.Display
-	disp.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f 3:%2.1f", e.CV1.Voltage(), e.CV2.Voltage(), e.CV3.Voltage()), 0, line1y)
-	disp.WriteLine(fmt.Sprintf("4:%2.1f 5:%2.1f 6:%2.1f", e.CV4.Voltage(), e.CV5.Voltage(), e.CV6.Voltage()), 0, line2y)
+	m.w.WriteLine(fmt.Sprintf("1:%2.1f 2:%2.1f 3:%2.1f", e.CV1.Voltage(), e.CV2.Voltage(), e.CV3.Voltage()), 0, line1y, draw.White)
+	m.w.WriteLine(fmt.Sprintf("4:%2.1f 5:%2.1f 6:%2.1f", e.CV4.Voltage(), e.CV5.Voltage(), e.CV6.Voltage()), 0, line2y, draw.White)
 }

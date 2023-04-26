@@ -4,7 +4,7 @@ import (
 	"math"
 	"math/rand"
 
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type patternBrownian struct {

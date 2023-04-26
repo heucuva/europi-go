@@ -5,8 +5,9 @@ import (
 	"math/rand"
 	"time"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/clamp"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type ComplexRandom struct {
@@ -27,6 +28,8 @@ type ComplexRandom struct {
 	pc         float32
 	clock      clock
 }
+
+var slewLerp = lerp.NewLerp32(0, time.Second)
 
 func (m *ComplexRandom) Init(config Config) error {
 	fnSampleOutA := config.SampleOutA
@@ -56,7 +59,7 @@ func (m *ComplexRandom) Init(config Config) error {
 	m.SetClockSpeed(config.ClockSpeed)
 
 	m.sampleSlewB = config.SampleSlewB
-	m.slewLength = europim.Lerp(m.sampleSlewB.ToFloat32(), 0, time.Second)
+	m.slewLength = slewLerp.Lerp(m.sampleSlewB.ToFloat32())
 	if m.slewLength < m.slewT {
 		m.slewT = 0
 	}
@@ -120,7 +123,7 @@ func (m *ComplexRandom) SetSampleSlewB(cv units.CV) {
 	}
 
 	m.sampleSlewB = cv
-	m.slewLength = europim.Lerp(m.sampleSlewB.ToFloat32(), 0, time.Second)
+	m.slewLength = slewLerp.ClampedLerp(m.sampleSlewB.ToFloat32())
 	if m.slewLength < m.slewT {
 		m.slewT = 0
 	}
@@ -172,7 +175,7 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 			m.slewStart = m.slewEnd
 			m.sampleOutB(m.slewStart)
 		} else {
-			t := europim.Clamp(m.slewT+deltaTime, 0, m.slewLength)
+			t := clamp.Clamp(m.slewT+deltaTime, 0, m.slewLength)
 			x := float32(t.Seconds() / m.slewLength.Seconds())
 
 			var b units.CV
@@ -181,7 +184,7 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 				b = m.slewEnd
 				m.slewStart = m.slewEnd
 			} else {
-				b = europim.Clamp(europim.Lerp(x, m.slewStart, m.slewEnd), m.slewStart, m.slewEnd)
+				b = lerp.NewLerp32(m.slewStart, m.slewEnd).ClampedLerp(x)
 			}
 
 			m.slewT = t

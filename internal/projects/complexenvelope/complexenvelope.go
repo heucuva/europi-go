@@ -1,13 +1,13 @@
 package main
 
 import (
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/experimental/screenbank"
-	"github.com/heucuva/europi/internal/projects/complexenvelope/module"
-	"github.com/heucuva/europi/internal/projects/complexenvelope/screen"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/screenbank"
+	"github.com/awonak/EuroPiGo/hardware/hal"
+	"github.com/awonak/EuroPiGo/internal/projects/complexenvelope/module"
+	"github.com/awonak/EuroPiGo/internal/projects/complexenvelope/screen"
 )
 
 var (
@@ -45,10 +45,9 @@ func startLoop(e *europi.EuroPi) {
 		panic(err)
 	}
 
-	e.DI.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
-		high := e.DI.Value()
-		env.Gate(0, high)
-		env.Gate(1, high)
+	e.DI.HandlerEx(hal.ChangeAny, func(value bool, _ time.Duration) {
+		env.Gate(0, value)
+		env.Gate(1, value)
 	})
 
 }

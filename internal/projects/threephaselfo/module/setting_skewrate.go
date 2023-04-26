@@ -3,8 +3,8 @@ package module
 import (
 	"math"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/clamp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 const (
@@ -17,9 +17,9 @@ func SkewRateString(freq units.Hertz) string {
 }
 
 func SkewRateToCV(freq units.Hertz) units.CV {
-	rr := europim.Clamp(freq, MinSkewRate, MaxSkewRate)
+	rr := clamp.Clamp(freq, MinSkewRate, MaxSkewRate)
 	exp := float32(math.Log2(float64(rr)))
-	return units.CV(europim.Clamp((exp+16.0)/32.0, 0.0, 1.0))
+	return units.CV(clamp.Clamp((exp+16.0)/32.0, 0.0, 1.0))
 }
 
 func CVToSkewRate(cv units.CV) units.Hertz {

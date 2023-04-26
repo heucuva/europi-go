@@ -1,6 +1,6 @@
 package module
 
-import "github.com/heucuva/europi/units"
+import "github.com/awonak/EuroPiGo/units"
 
 type Config struct {
 	Degree0   func(cv units.BipolarCV)

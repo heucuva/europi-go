@@ -79,6 +79,10 @@ func (kb *KnobBank) ReadCV() units.CV {
 	return units.CV(clamp.Clamp(kb.Percent(), 0.0, 1.0))
 }
 
+func (kb *KnobBank) ReadBipolarCV() units.BipolarCV {
+	return units.BipolarCV(clamp.Clamp(kb.Percent(), 0.0, 1.0)*2.0 - 1.0)
+}
+
 func (kb *KnobBank) ReadVOct() units.VOct {
 	return units.VOct(kb.ReadVoltage())
 }

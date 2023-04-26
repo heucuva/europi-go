@@ -2,20 +2,22 @@ package screen
 
 import (
 	"fmt"
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/experimental/knobmenu"
-	"github.com/heucuva/europi/internal/projects/complexenvelope/module"
-	"github.com/heucuva/europi/output"
-	"github.com/heucuva/europi/units"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/draw"
+	"github.com/awonak/EuroPiGo/experimental/fontwriter"
+	"github.com/awonak/EuroPiGo/experimental/knobmenu"
+	"github.com/awonak/EuroPiGo/internal/projects/complexenvelope/module"
+	"github.com/awonak/EuroPiGo/units"
+	"tinygo.org/x/tinyfont/proggy"
 )
 
 type Settings struct {
 	km  *knobmenu.KnobMenu
 	Env *module.ComplexEnvelope
 	cur int
+	w   fontwriter.Writer
 }
 
 func (m *Settings) modeString() string {
@@ -79,6 +81,8 @@ func (m *Settings) setDecayValue(value units.CV) {
 }
 
 func (m *Settings) Start(e *europi.EuroPi) {
+	m.w.Display = e.Display
+	m.w.Font = &proggy.TinySZ8pt7b
 	m.setupMenu(e)
 }
 
@@ -101,7 +105,7 @@ func (m *Settings) Button1Debounce() time.Duration {
 	return time.Millisecond * 200
 }
 
-func (m *Settings) Button1(e *europi.EuroPi, p machine.Pin) {
+func (m *Settings) Button1(e *europi.EuroPi, _ time.Duration) {
 	m.km.Next()
 }
 
@@ -109,13 +113,12 @@ func (m *Settings) Button2Debounce() time.Duration {
 	return time.Millisecond * 200
 }
 
-func (m *Settings) Button2(e *europi.EuroPi, p machine.Pin) {
+func (m *Settings) Button2(e *europi.EuroPi, _ time.Duration) {
 	m.cur = (m.cur + 1) % 2
 	m.setupMenu(e)
 }
 
 func (m *Settings) Paint(e *europi.EuroPi, deltaTime time.Duration) {
 	m.km.Paint(e, deltaTime)
-	disp := e.Display
-	disp.WriteLineInverseAligned(fmt.Sprint(m.cur+1), 0, line1y, output.AlignRight, output.AlignTop)
+	m.w.WriteLineInverseAligned(fmt.Sprint(m.cur+1), 0, line1y, draw.White, fontwriter.AlignRight, fontwriter.AlignTop)
 }

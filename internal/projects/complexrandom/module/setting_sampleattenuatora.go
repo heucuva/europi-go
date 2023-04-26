@@ -3,7 +3,7 @@ package module
 import (
 	"fmt"
 
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 func SampleAttenuatorAString(cv units.CV) string {

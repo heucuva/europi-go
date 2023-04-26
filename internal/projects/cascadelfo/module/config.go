@@ -1,6 +1,6 @@
 package module
 
-import "github.com/heucuva/europi/units"
+import "github.com/awonak/EuroPiGo/units"
 
 type Config struct {
 	LFO              [8]func(cv units.BipolarCV)

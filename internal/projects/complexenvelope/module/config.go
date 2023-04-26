@@ -1,6 +1,6 @@
 package module
 
-import "github.com/heucuva/europi/units"
+import "github.com/awonak/EuroPiGo/units"
 
 type Config struct {
 	Env [2]EnvelopeConfig

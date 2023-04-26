@@ -1,22 +1,22 @@
 package main
 
 import (
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/experimental/screenbank"
-	lfoScreen "github.com/heucuva/europi/internal/projects/cascadelfo/screen"
-	clockScreen "github.com/heucuva/europi/internal/projects/clockgenerator/screen"
-	arpScreen "github.com/heucuva/europi/internal/projects/complexarp/screen"
-	envScreen "github.com/heucuva/europi/internal/projects/complexenvelope/screen"
-	rndScreen "github.com/heucuva/europi/internal/projects/complexrandom/screen"
-	trigScreen "github.com/heucuva/europi/internal/projects/randomgates/screen"
-	skipScreen "github.com/heucuva/europi/internal/projects/randomskips/screen"
-	modScreen "github.com/heucuva/europi/internal/projects/threephaselfo/screen"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/module"
-	"github.com/heucuva/europi/internal/projects/unfoldablespace/screen"
-	"github.com/heucuva/europi/units"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/screenbank"
+	"github.com/awonak/EuroPiGo/hardware/hal"
+	lfoScreen "github.com/awonak/EuroPiGo/internal/projects/cascadelfo/screen"
+	clockScreen "github.com/awonak/EuroPiGo/internal/projects/clockgenerator/screen"
+	arpScreen "github.com/awonak/EuroPiGo/internal/projects/complexarp/screen"
+	envScreen "github.com/awonak/EuroPiGo/internal/projects/complexenvelope/screen"
+	rndScreen "github.com/awonak/EuroPiGo/internal/projects/complexrandom/screen"
+	trigScreen "github.com/awonak/EuroPiGo/internal/projects/randomgates/screen"
+	skipScreen "github.com/awonak/EuroPiGo/internal/projects/randomskips/screen"
+	modScreen "github.com/awonak/EuroPiGo/internal/projects/threephaselfo/screen"
+	"github.com/awonak/EuroPiGo/internal/projects/unfoldablespace/module"
+	"github.com/awonak/EuroPiGo/internal/projects/unfoldablespace/screen"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 var (
@@ -83,9 +83,8 @@ func startLoop(e *europi.EuroPi) {
 		panic(err)
 	}
 
-	e.DI.HandlerEx(machine.PinRising|machine.PinFalling, func(p machine.Pin) {
-		high := e.DI.Value()
-		unfold.Clock(high)
+	e.DI.HandlerEx(hal.ChangeAny, func(value bool, _ time.Duration) {
+		unfold.Clock(value)
 	})
 }
 

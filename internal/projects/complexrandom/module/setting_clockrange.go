@@ -1,18 +1,20 @@
 package module
 
 import (
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 func ClockRangeString(mode Clock) string {
 	return mode.String()
 }
 
+var clockRangeLerp = lerp.NewLerp32(ClockFull, ClockLimited)
+
 func ClockRangeToCV(mode Clock) units.CV {
-	return units.CV(europim.InverseLerp(mode, ClockFull, ClockLimited))
+	return units.CV(clockRangeLerp.ClampedInverseLerp(mode))
 }
 
 func CVToClockRange(cv units.CV) Clock {
-	return europim.LerpRound(cv.ToFloat32(), ClockFull, ClockLimited)
+	return clockRangeLerp.ClampedLerpRound(cv.ToFloat32())
 }

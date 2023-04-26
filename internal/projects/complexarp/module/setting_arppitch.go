@@ -3,18 +3,20 @@ package module
 import (
 	"fmt"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 func ArpPitchString(voct units.VOct) string {
 	return fmt.Sprintf("%2.1f", voct)
 }
 
+var arpPitchLerp = lerp.NewLerp32(units.MinVOct, units.MaxVOct)
+
 func ArpPitchToCV(voct units.VOct) units.CV {
-	return units.CV(europim.InverseLerp(voct, units.MinVOct, units.MaxVOct))
+	return units.CV(arpPitchLerp.ClampedInverseLerp(voct))
 }
 
 func CVToArpPitch(cv units.CV) units.VOct {
-	return europim.Lerp(cv.ToFloat32(), units.MinVOct, units.MaxVOct)
+	return arpPitchLerp.ClampedLerp(cv.ToFloat32())
 }

@@ -1,14 +1,13 @@
 package main
 
 import (
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/experimental/screenbank"
-	"github.com/heucuva/europi/internal/projects/complexrandom/module"
-	"github.com/heucuva/europi/internal/projects/complexrandom/screen"
-	"github.com/heucuva/europi/units"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/screenbank"
+	"github.com/awonak/EuroPiGo/internal/projects/complexrandom/module"
+	"github.com/awonak/EuroPiGo/internal/projects/complexrandom/screen"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 var (
@@ -24,7 +23,8 @@ var (
 
 func bipolarOut(out func(units.CV)) func(cv units.BipolarCV) {
 	return func(cv units.BipolarCV) {
-		out(cv.ToCV())
+		v, _ := cv.ToCV()
+		out(v)
 	}
 }
 
@@ -44,9 +44,8 @@ func startLoop(e *europi.EuroPi) {
 		panic(err)
 	}
 
-	e.DI.Handler(func(p machine.Pin) {
-		high := e.DI.Value()
-		rnd.Gate(high)
+	e.DI.Handler(func(value bool, _ time.Duration) {
+		rnd.Gate(value)
 	})
 }
 

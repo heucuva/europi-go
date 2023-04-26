@@ -3,8 +3,8 @@ package module
 import (
 	"fmt"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 const (
@@ -16,10 +16,12 @@ func PulseStageDividerString(psd int) string {
 	return fmt.Sprint(psd)
 }
 
+var pulseStageDividerLerp = lerp.NewLerp32(MinPulseStageDivider, MaxPulseStageDivider)
+
 func PulseStageDividerToCV(psd int) units.CV {
-	return units.CV(europim.InverseLerp(psd, MinPulseStageDivider, MaxPulseStageDivider))
+	return units.CV(pulseStageDividerLerp.ClampedInverseLerp(psd))
 }
 
 func CVToPulseStageDivider(cv units.CV) int {
-	return europim.LerpRound(cv.ToFloat32(), MinPulseStageDivider, MaxPulseStageDivider)
+	return pulseStageDividerLerp.ClampedLerpRound(cv.ToFloat32())
 }

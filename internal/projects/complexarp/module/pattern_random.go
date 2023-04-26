@@ -3,7 +3,7 @@ package module
 import (
 	"math"
 
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type patternRandom struct {

@@ -3,8 +3,8 @@ package module
 import (
 	"math"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 var (
@@ -71,7 +71,7 @@ func (o *lfo) Update(delta float32) {
 		if f != 0 {
 			p1 := (p0 + 1) % len(lfoTriangle)
 			x1 := lfoTriangle[p1]
-			x0 = europim.Lerp(float32(f), x0, x1)
+			x0 = lerp.NewLerp32(x0, x1).Lerp(float32(f))
 		}
 
 		o.out(x0)

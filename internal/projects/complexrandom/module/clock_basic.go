@@ -3,8 +3,8 @@ package module
 import (
 	"time"
 
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type clockBasic struct {
@@ -17,7 +17,8 @@ type clockBasic struct {
 
 func (c *clockBasic) SetRate(cv units.CV) {
 	c.rate = cv
-	c.interval = europim.Lerp(c.rate.ToFloat32(), time.Second, time.Second/c.spectrum)
+	l := lerp.NewLerp32(time.Second, time.Second/c.spectrum)
+	c.interval = l.ClampedLerp(c.rate.ToFloat32())
 }
 
 func (c *clockBasic) Rate() units.CV {

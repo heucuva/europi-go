@@ -1,8 +1,8 @@
 package module
 
 import (
-	europim "github.com/heucuva/europi/math"
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/lerp"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 func ScaleString(s Scale) string {
@@ -32,10 +32,12 @@ func ScaleString(s Scale) string {
 	}
 }
 
+var scaleLerp = lerp.NewLerp32(ScaleC_Lydian, ScaleC_Augmented)
+
 func ScaleToCV(s Scale) units.CV {
-	return units.CV(europim.InverseLerp(s, ScaleC_Lydian, ScaleC_Augmented))
+	return units.CV(scaleLerp.ClampedInverseLerp(s))
 }
 
 func CVToScale(cv units.CV) Scale {
-	return europim.LerpRound(cv.ToFloat32(), ScaleC_Lydian, ScaleC_Augmented)
+	return scaleLerp.ClampedLerpRound(cv.ToFloat32())
 }

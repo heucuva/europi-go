@@ -3,7 +3,7 @@ package module
 import (
 	"time"
 
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 type CascadeLFO struct {

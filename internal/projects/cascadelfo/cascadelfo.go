@@ -1,14 +1,13 @@
 package main
 
 import (
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/experimental/screenbank"
-	"github.com/heucuva/europi/internal/projects/cascadelfo/module"
-	"github.com/heucuva/europi/internal/projects/cascadelfo/screen"
-	"github.com/heucuva/europi/units"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/screenbank"
+	"github.com/awonak/EuroPiGo/internal/projects/cascadelfo/module"
+	"github.com/awonak/EuroPiGo/internal/projects/cascadelfo/screen"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 var (
@@ -24,7 +23,8 @@ var (
 
 func bipolarOut(out func(units.CV)) func(cv units.BipolarCV) {
 	return func(cv units.BipolarCV) {
-		out(cv.ToCV())
+		v, _ := cv.ToCV()
+		out(v)
 	}
 }
 
@@ -46,13 +46,15 @@ func startLoop(e *europi.EuroPi) {
 		panic(err)
 	}
 
-	e.DI.Handler(func(p machine.Pin) {
-		lfo.Reset()
+	e.DI.Handler(func(value bool, _ time.Duration) {
+		if value {
+			lfo.Reset()
+		}
 	})
 }
 
 func mainLoop(e *europi.EuroPi, deltaTime time.Duration) {
-	lfo.SetCV(e.AI.ReadCV().ToBipolarCV())
+	lfo.SetCV(e.AI.ReadBipolarCV())
 	lfo.Tick(deltaTime)
 }
 

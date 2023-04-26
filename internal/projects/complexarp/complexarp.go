@@ -1,14 +1,13 @@
 package main
 
 import (
-	"machine"
 	"time"
 
-	"github.com/heucuva/europi"
-	"github.com/heucuva/europi/experimental/quantizer"
-	"github.com/heucuva/europi/experimental/screenbank"
-	"github.com/heucuva/europi/internal/projects/complexarp/module"
-	"github.com/heucuva/europi/internal/projects/complexarp/screen"
+	europi "github.com/awonak/EuroPiGo"
+	"github.com/awonak/EuroPiGo/experimental/screenbank"
+	"github.com/awonak/EuroPiGo/internal/projects/complexarp/module"
+	"github.com/awonak/EuroPiGo/internal/projects/complexarp/screen"
+	"github.com/awonak/EuroPiGo/quantizer"
 )
 
 var (
@@ -34,9 +33,8 @@ func startLoop(e *europi.EuroPi) {
 		panic(err)
 	}
 
-	e.DI.Handler(func(p machine.Pin) {
-		high := e.DI.Value()
-		arp.ArpClock(high)
+	e.DI.Handler(func(value bool, _ time.Duration) {
+		arp.ArpClock(value)
 	})
 }
 

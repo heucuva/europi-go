@@ -3,7 +3,7 @@ package module
 import (
 	"fmt"
 
-	"github.com/heucuva/europi/units"
+	"github.com/awonak/EuroPiGo/units"
 )
 
 func ClockSpeedString(cv units.CV) string {
