@@ -7,7 +7,6 @@ import (
 	"github.com/awonak/EuroPiGo/experimental/screenbank"
 	"github.com/awonak/EuroPiGo/internal/projects/complexrandom/module"
 	"github.com/awonak/EuroPiGo/internal/projects/complexrandom/screen"
-	"github.com/awonak/EuroPiGo/units"
 )
 
 var (
@@ -20,13 +19,6 @@ var (
 		ComplexRandom: &rnd,
 	}
 )
-
-func bipolarOut(out func(units.CV)) func(cv units.BipolarCV) {
-	return func(cv units.BipolarCV) {
-		v, _ := cv.ToCV()
-		out(v)
-	}
-}
 
 func startLoop(e *europi.EuroPi) {
 	if err := rnd.Init(module.Config{
