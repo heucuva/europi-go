@@ -16,7 +16,6 @@ import (
 	modScreen "github.com/awonak/EuroPiGo/internal/projects/threephaselfo/screen"
 	"github.com/awonak/EuroPiGo/internal/projects/unfoldablespace/module"
 	"github.com/awonak/EuroPiGo/internal/projects/unfoldablespace/screen"
-	"github.com/awonak/EuroPiGo/units"
 )
 
 var (
@@ -52,32 +51,13 @@ var (
 )
 
 func startLoop(e *europi.EuroPi) {
-	setVOct := func(voct units.VOct) {
-		e.CV1.SetVoltage(voct.ToVolts())
-	}
-	setLevel := func(cv units.CV) {
-		e.CV2.SetVoltage(cv.ToVolts())
-	}
-	setTimbre := func(cv units.CV) {
-		e.CV3.SetVoltage(cv.ToVolts())
-	}
-	setHarmo := func(cv units.CV) {
-		e.CV4.SetVoltage(cv.ToVolts())
-	}
-	setMorph := func(cv units.BipolarCV) {
-		e.CV5.SetVoltage(cv.ToVolts())
-	}
-	setLFOCV := func(cv units.BipolarCV) {
-		e.CV6.SetVoltage(cv.ToVolts())
-	}
-
 	if err := unfold.Init(module.Config{
-		SetVOct:          setVOct,
-		SetLevel:         setLevel,
-		SetTimbre:        setTimbre,
-		SetHarmo:         setHarmo,
-		SetMorph:         setMorph,
-		SetLFOCV:         setLFOCV,
+		SetVOct:          e.CV1.SetVOct,
+		SetLevel:         e.CV2.SetCV,
+		SetTimbre:        e.CV3.SetBipolarCV,
+		SetHarmo:         e.CV4.SetBipolarCV,
+		SetMorph:         e.CV5.SetBipolarCV,
+		SetLFOCV:         e.CV6.SetBipolarCV,
 		VOctInputEnabled: false,
 	}); err != nil {
 		panic(err)

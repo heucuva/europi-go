@@ -82,6 +82,11 @@ func (o *voltageoutput) SetCV(cv units.CV) {
 	o.SetVoltage(cv.ToVolts())
 }
 
+// SetBipolarCV sets the current output voltage based on a BipolarCV value
+func (o *voltageoutput) SetBipolarCV(cv units.BipolarCV) {
+	o.SetVoltage(cv.ToVolts())
+}
+
 // SetCV sets the current output voltage based on a V/Octave value
 func (o *voltageoutput) SetVOct(voct units.VOct) {
 	o.SetVoltage(voct.ToVolts())

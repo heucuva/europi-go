@@ -22,8 +22,8 @@ var (
 
 func startLoop(e *europi.EuroPi) {
 	if err := rnd.Init(module.Config{
-		SampleOutA:        e.CV1.SetCV,
-		SampleOutB:        e.CV2.SetCV,
+		SampleOutA:        e.CV1.SetBipolarCV,
+		SampleOutB:        e.CV2.SetBipolarCV,
 		SampleAttenuatorA: 0.6,
 		IntegrationSlope:  0.0,
 		GateDensity:       0.4,

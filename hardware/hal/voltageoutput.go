@@ -9,6 +9,7 @@ import (
 type VoltageOutput interface {
 	SetVoltage(v float32)
 	SetCV(cv units.CV)
+	SetBipolarCV(cv units.BipolarCV)
 	SetVOct(voct units.VOct)
 	Voltage() float32
 	MinVoltage() float32

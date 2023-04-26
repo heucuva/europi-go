@@ -11,20 +11,20 @@ import (
 )
 
 type ComplexRandom struct {
-	sampleOutA        func(cv units.CV)
-	sampleOutB        func(cv units.CV)
-	sampleAttenuatorA units.CV
+	sampleOutA        func(cv units.BipolarCV)
+	sampleOutB        func(cv units.BipolarCV)
+	sampleAttenuatorA units.BipolarCV
 	integrationSlope  units.CV
 	gateDensity       units.CV
 	pulseStageDivider float32
-	sampleAttenuatorB units.CV
+	sampleAttenuatorB units.BipolarCV
 	sampleSlewB       units.CV
 	clockRange        Clock
 
 	slewLength time.Duration
 	slewT      time.Duration
-	slewStart  units.CV
-	slewEnd    units.CV
+	slewStart  units.BipolarCV
+	slewEnd    units.BipolarCV
 	pc         float32
 	clock      clock
 }
@@ -69,18 +69,18 @@ func (m *ComplexRandom) Init(config Config) error {
 	return nil
 }
 
-func noopSampleOut(cv units.CV) {
+func noopSampleOut(cv units.BipolarCV) {
 }
 
 func (m *ComplexRandom) Gate(high bool) {
 	// TODO
 }
 
-func (m *ComplexRandom) SetSampleAttenuatorA(cv units.CV) {
+func (m *ComplexRandom) SetSampleAttenuatorA(cv units.BipolarCV) {
 	m.sampleAttenuatorA = cv
 }
 
-func (m *ComplexRandom) SampleAttenuatorA() units.CV {
+func (m *ComplexRandom) SampleAttenuatorA() units.BipolarCV {
 	return m.sampleAttenuatorA
 }
 
@@ -108,11 +108,11 @@ func (m *ComplexRandom) PulseStageDivider() int {
 	return int(m.pulseStageDivider)
 }
 
-func (m *ComplexRandom) SetSampleAttenuatorB(cv units.CV) {
+func (m *ComplexRandom) SetSampleAttenuatorB(cv units.BipolarCV) {
 	m.sampleAttenuatorB = cv
 }
 
-func (m *ComplexRandom) SampleAttenuatorB() units.CV {
+func (m *ComplexRandom) SampleAttenuatorB() units.BipolarCV {
 	return m.sampleAttenuatorB
 }
 
@@ -178,7 +178,7 @@ func (m *ComplexRandom) Tick(deltaTime time.Duration) {
 			t := clamp.Clamp(m.slewT+deltaTime, 0, m.slewLength)
 			x := float32(t.Seconds() / m.slewLength.Seconds())
 
-			var b units.CV
+			var b units.BipolarCV
 			if x >= 1 {
 				t = 0
 				b = m.slewEnd
@@ -207,12 +207,12 @@ func (m *ComplexRandom) processTrigger() {
 
 	m.pc = float32(f)
 
-	ra := units.CV(rand.Float32())
+	ra := units.BipolarCV(rand.Float32()*2.0 - 1.0)
 	cva := ra * m.sampleAttenuatorA
 
 	m.sampleOutA(cva)
 
-	rb := units.CV(rand.Float32())
+	rb := units.BipolarCV(rand.Float32()*2.0 - 1.0)
 	cvb := rb * m.sampleAttenuatorB
 
 	m.slewEnd = cvb
